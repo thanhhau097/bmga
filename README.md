@@ -15,6 +15,12 @@
     - If the label is categorical: mapping the points in the graph to categorical classes
     - If the label is numerical: mapping the point to x/y-axis then calculate the value based on the ratio
 
+#### Approach 3: End-to-end solution with two branches/or 2 different models
+1. Branch 1: predict keypoints from image: https://github.com/HRNet/DEKR
+    - For graph: predict all points
+    - For axis: predict only key points, number of points is equal to number of labels in each axis
+2. Branch 2: Text generation branch to predict label in each axis, type of the labels: categorical/numerical, type of graph
+3. Map labels in each axis to corresponding points
 
 ### External data
 1. https://chartinfo.github.io/toolsanddata.html
@@ -23,3 +29,16 @@
 
 ### External tools
 1. https://github.com/kdavila/ChartInfo_annotation_tools
+
+
+### Command
+Neptune
+```
+export NEPTUNE_PROJECT="thanhhau097/bmga"
+export NEPTUNE_API_TOKEN="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLCJhcGlfdXJsIjoiaHR0cHM6Ly9hcHAubmVwdHVuZS5haSIsImFwaV9rZXkiOiJlMTRjM2ExOC1lYTA5LTQwODctODMxNi1jZjEzMjdlMjkxYTgifQ=="
+```
+
+
+```
+CUDA_VISIBLE_DEVICES=1 python -m lib_ds.models.donut.src.train --config ./lib_ds/models/donut/src/config/swinv2-bmga.yaml --output_dir outputs --do_train --do_eval --remove_unused_columns False --per_device_train_batch_size 8 --per_device_eval_batch_size 8 --learning_rate 2e-5 --warmup_ratio 0.01 --lr_scheduler_type cosine --save_strategy epoch --evaluation_strategy epoch --logging_strategy steps --logging_steps 20 --save_total_limit 2 --load_best_model_at_end True --fp16 --optim adamw_torch --weight_decay 1e-2 --num_train_epochs 20 --metric_for_best_model eval_loss --dataloader_num_workers=32 --max_grad_norm=1.0 --gradient_accumulation_steps=4 --overwrite_output_dir=True --report_to neptune
+```
