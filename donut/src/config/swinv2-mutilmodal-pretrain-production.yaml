@@ -1,0 +1,12 @@
+meta_arch: "multimodal"
+dataset_name_or_paths: ["/home/jovyan/lib-ds/data/production"] # loading datasets (from model hub or path)
+# dataset_name_or_paths: ["/home/jovyan/lib-ds/data/boleta"] # loading datasets (from model hub or path)
+resume: "/home/jovyan/donut/result/train_custom_pretrained/20221212_030526/pytorch_model.bin"
+sort_json_key: True # cord dataset is preprocessed, and publicly available at https://huggingface.co/datasets/naver-clova-ix/cord-v2
+backbone_name: ""
+input_size: [1280, 960]
+max_length: 768
+max_position_embeddings: 768
+align_long_axis: False
+text_encoder_name: "microsoft/Multilingual-MiniLM-L12-H384"
+fusion: "attention_clip"

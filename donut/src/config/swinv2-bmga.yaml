@@ -1,0 +1,9 @@
+# loading a pre-trained model (from model hub or path)
+# pretrained_model_name_or_path: "naver-clova-ix/donut-base"
+pretrained_model_name_or_path: "/home/thanh/shared_disk/thanh/lib-ds/outputs"
+dataset_name_or_paths: ["/home/thanh/shared_disk/thanh/bmga/data"] # loading datasets (from model hub or path)
+sort_json_key: True # cord dataset is preprocessed, and publicly available at https://huggingface.co/datasets/naver-clova-ix/cord-v2
+backbone_name: ""
+input_size: [640, 320] # w, h
+max_length: 768
+align_long_axis: False

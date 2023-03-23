@@ -1,0 +1,9 @@
+# loading a pre-trained model (from model hub or path)
+# pretrained_model_name_or_path: "naver-clova-ix/donut-base"
+pretrained_model_name_or_path: null
+dataset_name_or_paths: ["/home/nhan/donut/metlife-0902/"] # loading datasets (from model hub or path)
+sort_json_key: True # cord dataset is preprocessed, and publicly available at https://huggingface.co/datasets/naver-clova-ix/cord-v2
+backbone_name: "convnext_base_384_in22ft1k"
+input_size: [1280, 960]
+max_length: 768
+align_long_axis: False
