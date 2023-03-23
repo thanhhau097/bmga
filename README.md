@@ -28,7 +28,7 @@
 3. https://arxiv.org/pdf/2203.10244v1.pdf
 
 ### External tools
-1. https://github.com/kdavila/ChartInfo_annotation_tools
+1. https://github.com/kdavila/ChartInfo_annotation_tools: https://www.dropbox.com/s/fqnoq6bwnkgfqa9/ICDAR2023_CHARTINFO_UB_UNITEC_PMC_TRAIN_V1.0.zip
 
 
 ### Command
@@ -40,5 +40,10 @@ export NEPTUNE_API_TOKEN="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLC
 
 
 ```
-CUDA_VISIBLE_DEVICES=1 python -m lib_ds.models.donut.src.train --config ./lib_ds/models/donut/src/config/swinv2-bmga.yaml --output_dir outputs --do_train --do_eval --remove_unused_columns False --per_device_train_batch_size 8 --per_device_eval_batch_size 8 --learning_rate 2e-5 --warmup_ratio 0.01 --lr_scheduler_type cosine --save_strategy epoch --evaluation_strategy epoch --logging_strategy steps --logging_steps 20 --save_total_limit 2 --load_best_model_at_end True --fp16 --optim adamw_torch --weight_decay 1e-2 --num_train_epochs 20 --metric_for_best_model eval_loss --dataloader_num_workers=32 --max_grad_norm=1.0 --gradient_accumulation_steps=4 --overwrite_output_dir=True --report_to neptune
+CUDA_VISIBLE_DEVICES=1 python -m lib_ds.models.donut.src.train --config ./lib_ds/models/donut/src/config/swinv2-bmga.yaml --output_dir outputs --do_train --do_eval --remove_unused_columns False --per_device_train_batch_size 8 --per_device_eval_batch_size 128 --learning_rate 2e-5 --warmup_ratio 0.01 --lr_scheduler_type cosine --save_strategy epoch --evaluation_strategy epoch --logging_strategy steps --logging_steps 20 --save_total_limit 2 --load_best_model_at_end True --fp16 --optim adamw_torch --weight_decay 1e-2 --num_train_epochs 20 --metric_for_best_model eval_loss --dataloader_num_workers=32 --max_grad_norm=1.0 --gradient_accumulation_steps=4 --overwrite_output_dir=True --report_to neptune
+```
+
+Validation:
+```
+CUDA_VISIBLE_DEVICES=1 python -m lib_ds.models.donut.src.train --config ./lib_ds/models/donut/src/config/swinv2-bmga.yaml --output_dir outputs --do_eval --remove_unused_columns False --per_device_train_batch_size 8 --per_device_eval_batch_size 96 --learning_rate 2e-5 --warmup_ratio 0.01 --lr_scheduler_type cosine --save_strategy epoch --evaluation_strategy epoch --logging_strategy steps --logging_steps 20 --save_total_limit 2 --load_best_model_at_end True --fp16 --optim adamw_torch --weight_decay 1e-2 --num_train_epochs 20 --metric_for_best_model eval_loss --dataloader_num_workers=32 --max_grad_norm=1.0  --report_to none
 ```
