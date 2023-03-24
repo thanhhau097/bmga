@@ -109,7 +109,8 @@ class CustomTrainer(Trainer):
         pred = re.sub(r"<.*?>", "", pred, count=1).strip()
         pred = re.sub(r"(?:(?<=>) | (?=</s_))", "", pred)
 
-        answer = re.sub(r"(?:(?<=>) | (?=</s_))", "", answer)
+        # answer = re.sub(r"(?:(?<=>) | (?=</s_))", "", answer)
+        answer = re.sub(r"<.*?>", "", answer, count=1)
         score = 0 # edit_distance(pred, answer) / max(len(pred), len(answer))
 
         return score, pred, answer
@@ -175,6 +176,13 @@ class CustomTrainer(Trainer):
             print(f" Accuracy : {acc}\n")
 
         print("\n\n")
+        
+        # save json_preds and json_answers
+        import json
+        with open("./data/json_preds.json", "w") as f:
+            json.dump(json_preds, f)
+        with open("./data/json_answers.json", "w") as f:
+            json.dump(json_answers, f)
 
         class_acc = calculate_acc("class", json_preds, json_answers)
         x_type_acc = calculate_acc("x_type", json_preds, json_answers)
@@ -223,14 +231,14 @@ def calculate_acc(key, preds, answers):
     for pred in preds:
         if isinstance(pred, list):
             pred = pred[0]
-        pred_classes.append(pred.get(key, "1"))
+        pred_classes.append(str(pred.get(key, "1")))
 
 
     answer_classes = []
     for answer in answers:
         if isinstance(answer, list):
             answer = answer[0]
-        answer_classes.append(answer.get(key, "2"))
+        answer_classes.append(str(answer.get(key, "2")))
 
     from sklearn.metrics import accuracy_score
 
