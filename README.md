@@ -46,7 +46,7 @@ export NEPTUNE_API_TOKEN="eyJhcGlfYWRkcmVzcyI6Imh0dHBzOi8vYXBwLm5lcHR1bmUuYWkiLC
 
 
 ```
-CUDA_VISIBLE_DEVICES=1 python -m donut.src.train --config ./donut/src/config/swinv2-bmga.yaml --output_dir outputs --do_train --do_eval --remove_unused_columns False --per_device_train_batch_size 8 --per_device_eval_batch_size 128 --learning_rate 2e-5 --warmup_ratio 0.01 --lr_scheduler_type cosine --save_strategy epoch --evaluation_strategy epoch --logging_strategy steps --logging_steps 20 --save_total_limit 2 --load_best_model_at_end True --fp16 --optim adamw_torch --weight_decay 1e-2 --num_train_epochs 20 --metric_for_best_model eval_class_acc --greater_is_better=True --dataloader_num_workers=32 --max_grad_norm=1.0 --gradient_accumulation_steps=4 --overwrite_output_dir=True --report_to neptune
+CUDA_VISIBLE_DEVICES=1 python -m donut.src.train --config ./donut/src/config/swinv2-bmga.yaml --output_dir outputs --do_train --do_eval --remove_unused_columns False --per_device_train_batch_size 12 --per_device_eval_batch_size 128 --learning_rate 2e-5 --warmup_ratio 0.01 --lr_scheduler_type cosine --save_strategy epoch --evaluation_strategy epoch --logging_strategy steps --logging_steps 20 --save_total_limit 2 --load_best_model_at_end True --fp16 --optim adamw_torch --weight_decay 1e-2 --num_train_epochs 20 --metric_for_best_model eval_class_acc --greater_is_better=True --dataloader_num_workers=32 --max_grad_norm=1.0 --gradient_accumulation_steps=4 --overwrite_output_dir=True --report_to neptune
 ```
 
 Validation:
