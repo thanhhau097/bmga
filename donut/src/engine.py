@@ -109,8 +109,8 @@ class CustomTrainer(Trainer):
         pred = re.sub(r"<.*?>", "", pred, count=1).strip()
         pred = re.sub(r"(?:(?<=>) | (?=</s_))", "", pred)
 
-        # answer = re.sub(r"(?:(?<=>) | (?=</s_))", "", answer)
-        answer = re.sub(r"<.*?>", "", answer, count=1)
+        answer = re.sub(r"(?:(?<=>) | (?=</s_))", "", answer)
+        # answer = re.sub(r"<.*?>", "", answer, count=1)
         score = 0 # edit_distance(pred, answer) / max(len(pred), len(answer))
 
         return score, pred, answer
