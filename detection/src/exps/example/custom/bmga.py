@@ -19,10 +19,13 @@ class Exp(MyExp):
         self.val_ann = "val_coco_annotations.json"
 
         self.num_classes = 3
+        self.input_size = (640, 640)
 
         self.max_epoch = 300
+        self.no_aug_epochs = 300
         self.data_num_workers = 32
         self.eval_interval = 1
+
 
     def get_dataset(self, cache: bool = False, cache_type: str = "ram"):
         """
