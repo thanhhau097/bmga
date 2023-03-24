@@ -32,9 +32,14 @@
 1. https://chartinfo.github.io/toolsanddata.html
 2. https://iitmnlp.github.io/PlotQA/ + https://arxiv.org/pdf/1909.00997.pdf
 3. https://arxiv.org/pdf/2203.10244v1.pdf
+4. https://github.com/JasonObeid/Chart2Text
 
 ### External tools
 1. https://github.com/kdavila/ChartInfo_annotation_tools: https://www.dropbox.com/s/fqnoq6bwnkgfqa9/ICDAR2023_CHARTINFO_UB_UNITEC_PMC_TRAIN_V1.0.zip
+
+### Data generation
+1. https://squid.org/rpg-random-generator
+2. 
 
 
 ### Command
