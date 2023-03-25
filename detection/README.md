@@ -9,3 +9,7 @@ wget https://github.com/Megvii-BaseDetection/YOLOX/releases/download/0.1.1rc0/yo
 ```
 PYTHONPATH=./ CUDA_VISIBLE_DEVICES=1 python tools/train.py -f /home/thanh/shared_disk/thanh/bmga/detection/src/exps/example/custom/bmga.py -d 1 -b 64 --fp16 -o -c /home/thanh/shared_disk/thanh/bmga/data/yolox_s.pth --cache
 ```
+
+### Rules:
+1. Detect x points and y points using linear regression (x mean, y mean) and position (left and bottom of image)
+2. Map x/y labels to corresponding point to filter out outlier and add missing point if there is

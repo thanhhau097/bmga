@@ -132,6 +132,8 @@ if __name__ == "__main__":
 
     if args.cache is not None:
         exp.dataset = exp.get_dataset(cache=True, cache_type=args.cache)
+    
+    args.batch_size = 32
 
     dist_url = "auto" if args.dist_url is None else args.dist_url
     launch(

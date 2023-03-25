@@ -26,6 +26,8 @@ class BMGADataset(Dataset):
         image = cv2.resize(image, self.size)
         # channel first
         image = image.transpose(2, 0, 1)
+        image = image.astype("float32")
+        image /= 255.0
 
         if self.transform is not None:
             image = self.transform(image=image)["image"]
