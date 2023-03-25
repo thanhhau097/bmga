@@ -17,7 +17,7 @@ class TextRecognitionModel:
             img = self.img_transform(img).unsqueeze(0)
 
             logits = self.parseq(img)
-            logits.shape  # torch.Size([1, 26, 95]), 94 characters + [EOS] symbol
+            # logits.shape  # torch.Size([1, 26, 95]), 94 characters + [EOS] symbol
 
             # Greedy decoding
             pred = logits.softmax(-1)
@@ -26,3 +26,10 @@ class TextRecognitionModel:
             confidences.append(confidence)
 
         return labels, confidences
+
+    def postprocess(self, predictions, image_paths):
+        return predictions
+
+    def __call__(self, image_paths):
+        predictions = self.predict(image_paths)
+        return self.postprocess(predictions, image_paths)

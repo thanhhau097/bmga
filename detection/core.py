@@ -34,4 +34,11 @@ class ObjectDetectionModel:
             all_img_info.append(img_info)
 
         return all_outputs, all_img_info
+
+    def postprocess(self, predictions, image_paths):
+        return predictions
+
+    def __call__(self, image_paths, size=(640, 640), batch_size=16, num_workers=16):
+        predictions = self.predict(image_paths, size, batch_size, num_workers)
+        return self.postprocess(predictions, image_paths)
         

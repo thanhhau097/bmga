@@ -10,16 +10,16 @@ from .src.demo import Demo, Structure, Experiment, Configurable, Config
 
 class TextDetectionModel:
     def __init__(
-            self,
-            weights_path,
-            config_path,
-            image_short_side,
-            thresh,
-            box_thresh,
-            resize,
-            polygon,
-            device="cuda"
-        ):
+        self,
+        weights_path,
+        config_path,
+        image_short_side,
+        thresh,
+        box_thresh,
+        resize,
+        polygon,
+        device="cuda"
+    ):
         args = {
             "resume": weights_path,
             "image_short_side": image_short_side,
@@ -43,3 +43,10 @@ class TextDetectionModel:
             all_outputs.append(outputs)
 
         return all_outputs
+
+    def postprocess(self, predictions, image_paths):
+        return predictions
+    
+    def __call__(self, image_paths, visualize=False):
+        predictions = self.predict(image_paths, visualize)
+        return self.postprocess(predictions, image_paths)
