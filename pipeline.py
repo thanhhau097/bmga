@@ -86,7 +86,7 @@ if __name__ == "__main__":
         "name": "keypoint_detection",
         "experiment_path": "./detection/src/exps/example/custom/bmga.py",
         "weights_path": "./weights/keypoint_detection.pth",
-        "classes": ["value", "x", "y"],
+        "classes": ["value", "x", "y", "x_label", "y_label"],
         "conf_thre": 0.15,
         "nms_thre": 0.25,
         "test_size": (640, 640),
