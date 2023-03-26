@@ -103,7 +103,7 @@ if __name__ == "__main__":
     }
 
     text_recognition_config = {
-        "weights_path": "./weights/text_recognition.pth",
+        "weights_path": "baudm/parseq",
         "model_name": "parseq",
     }
 
