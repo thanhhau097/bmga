@@ -3,6 +3,7 @@ import torch
 import cv2
 import numpy as np
 import math
+from tqdm import tqdm
 
 from .src.demo import Demo, Structure, Experiment, Configurable, Config
 
@@ -38,7 +39,7 @@ class TextDetectionModel:
 
     def predict(self, image_paths, visualize=False):
         all_outputs = []
-        for path in image_paths:
+        for path in tqdm(image_paths):
             outputs = self.predictor.inference(path, visualize)
             all_outputs.append(outputs)
 

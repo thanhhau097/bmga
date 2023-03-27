@@ -20,7 +20,7 @@ class ObjectDetectionModel:
             self.model = self.model.cuda()
         self.model.eval()
 
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        device = "gpu" if torch.cuda.is_available() else "cpu"
 
         self.predictor = Predictor(
             self.model, self.exp, classes, None, None, device, False, False

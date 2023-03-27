@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import torch
+from tqdm import tqdm
 
 from .src.model import Model
 
@@ -37,7 +38,7 @@ class ClassificationModel:
         if torch.cuda.is_available():
             self.model = self.model.cuda()
 
-    def predict(self, image_paths, size=(640, 320), batch_size=16, num_workers=16):
+    def predict(self, image_paths, size=(640, 320), batch_size=16, num_workers=0):
         dataset = InferenceDataset(image_paths, size)
         dataloader = torch.utils.data.DataLoader(
             dataset,
@@ -48,7 +49,7 @@ class ClassificationModel:
         )
 
         predictions = []
-        for batch in dataloader:
+        for batch in tqdm(dataloader):
             if torch.cuda.is_available():
                 batch = {k: v.cuda() for k, v in batch.items()}
             with torch.no_grad():

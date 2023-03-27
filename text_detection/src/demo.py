@@ -47,11 +47,16 @@ class Demo:
     def __init__(self, experiment, args, cmd=dict()):
         self.RGB_MEAN = np.array([122.67891434, 116.66876762, 104.00698793])
         self.experiment = experiment
-        experiment.load('evaluation', **args)
+        # experiment.load('evaluation', **args)
         self.args = cmd
-        model_saver = experiment.train.model_saver
+        # model_saver = experiment.train.model_saver
         self.structure = experiment.structure
         self.model_path = self.args['resume']
+
+        self.init_torch_tensor()
+        self.model = self.init_model()
+        self.resume(self.model, self.model_path)
+        self.model.eval()
 
     def init_torch_tensor(self):
         # Use gpu or not
@@ -123,18 +128,13 @@ class Demo:
                         res.write(result + ',' + str(score) + "\n")
         
     def inference(self, image_path, visualize=False):
-        self.init_torch_tensor()
-        model = self.init_model()
-        self.resume(model, self.model_path)
-        all_matircs = {}
-        model.eval()
         batch = dict()
         batch['filename'] = [image_path]
         img, original_shape = self.load_image(image_path)
         batch['shape'] = [original_shape]
         with torch.no_grad():
             batch['image'] = img
-            pred = model.forward(batch, training=False)
+            pred = self.model.forward(batch, training=False)
             output = self.structure.representer.represent(batch, pred, is_output_polygon=self.args['polygon']) 
             # if not os.path.isdir(self.args['result_dir']):
             #     os.mkdir(self.args['result_dir'])

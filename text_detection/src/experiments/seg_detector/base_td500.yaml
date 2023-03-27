@@ -1,5 +1,5 @@
 import:
-    - 'experiments/base.yaml'
+    - '/home/thanh/shared_disk/thanh/bmga/text_detection/src/experiments/base.yaml'
 package:
     - 'decoders.seg_detector_loss'
 define:

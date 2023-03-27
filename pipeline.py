@@ -93,8 +93,9 @@ if __name__ == "__main__":
     }
 
     text_detection_config = {
-        "weights_path": "./weights/text_detection.pth",
-        "config_path": "./weights/text_detection_config.json",
+        "weights_path": "./weights/synthtext_totaltext_res50_dcn_fpn_scale_spatial",
+        # "config_path": "/home/thanh/shared_disk/thanh/bmga/text_detection/src/experiments/seg_detector/totaltext_resnet50_deform_thre.yaml",
+        "config_path": "/home/thanh/shared_disk/thanh/bmga/text_detection/src/experiments/ASF/td500_resnet50_deform_thre_asf.yaml",
         "image_short_side": 320,
         "thresh": 0.1,
         "box_thresh": 0.6,
@@ -117,6 +118,6 @@ if __name__ == "__main__":
     )
 
     image_folder = "./data/validation/images"
-    image_paths = [os.path.join(image_folder, x) for x in os.listdir(image_folder)]
+    image_paths = [os.path.join(image_folder, x) for x in os.listdir(image_folder) if ".jpg" in x]
 
     pipeline(image_paths)
