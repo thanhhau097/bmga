@@ -94,8 +94,8 @@ if __name__ == "__main__":
 
     text_detection_config = {
         "weights_path": "./weights/synthtext_totaltext_res50_dcn_fpn_scale_spatial",
-        # "config_path": "/home/thanh/shared_disk/thanh/bmga/text_detection/src/experiments/seg_detector/totaltext_resnet50_deform_thre.yaml",
-        "config_path": "/home/thanh/shared_disk/thanh/bmga/text_detection/src/experiments/ASF/td500_resnet50_deform_thre_asf.yaml",
+        # "config_path": "/home/thanh/bmga/text_detection/src/experiments/seg_detector/totaltext_resnet50_deform_thre.yaml",
+        "config_path": "/home/thanh/bmga/text_detection/src/experiments/ASF/td500_resnet50_deform_thre_asf.yaml",
         "image_short_side": 320,
         "thresh": 0.1,
         "box_thresh": 0.6,

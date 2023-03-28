@@ -1,7 +1,7 @@
 # loading a pre-trained model (from model hub or path)
 # pretrained_model_name_or_path: "naver-clova-ix/donut-base"
-pretrained_model_name_or_path: "/home/thanh/shared_disk/thanh/bmga/outputs_768/checkpoint-37120/"
-dataset_name_or_paths: ["/home/thanh/shared_disk/thanh/bmga/data"] # loading datasets (from model hub or path)
+pretrained_model_name_or_path: "/home/thanh/bmga/outputs_768/checkpoint-37120/"
+dataset_name_or_paths: ["/home/thanh/bmga/data"] # loading datasets (from model hub or path)
 sort_json_key: True # cord dataset is preprocessed, and publicly available at https://huggingface.co/datasets/naver-clova-ix/cord-v2
 backbone_name: ""
 input_size: [640, 320] # w, h

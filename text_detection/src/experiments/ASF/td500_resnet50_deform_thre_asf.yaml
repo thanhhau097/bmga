@@ -1,5 +1,5 @@
 import:
-    - '/home/thanh/shared_disk/thanh/bmga/text_detection/src/experiments/seg_detector/base_td500.yaml'
+    - '/home/thanh/bmga/text_detection/src/experiments/seg_detector/base_td500.yaml'
 package: []
 define:
   - name: 'Experiment'

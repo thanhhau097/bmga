@@ -33,7 +33,7 @@ class Exp(MyExp):
         self.exp_name = os.path.split(os.path.realpath(__file__))[1].split(".")[0]
 
         # Define yourself dataset path
-        self.data_dir = "/home/thanh/shared_disk/thanh/bmga/data"
+        self.data_dir = "/home/thanh/bmga/data"
         self.train_ann = "train_coco_annotations.json"
         self.val_ann = "val_coco_annotations.json"
 
