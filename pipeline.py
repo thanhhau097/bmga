@@ -1,9 +1,9 @@
 import sys
 
+sys.path.insert(0, "./text_detection/src")
 sys.path.append("./classification/src")
 sys.path.append("./detection/src")
 sys.path.append("./text_recognition/src")
-sys.path.append("./text_detection/src")
 
 import os
 import pandas as pd
@@ -34,10 +34,10 @@ class Pipeline:
         self.postprocessing = Postprocessing()
 
     def __call__(self, image_paths: list):
-        classification_results = self.classification_model.predict(image_paths)
-        x_type_classification_results = self.x_type_classification_model.predict(image_paths)
-        y_type_classification_results = self.y_type_classification_model.predict(image_paths)
-        keypoint_detection_results = self.keypoint_detection_model.predict(image_paths)
+        # classification_results = self.classification_model.predict(image_paths)
+        # x_type_classification_results = self.x_type_classification_model.predict(image_paths)
+        # y_type_classification_results = self.y_type_classification_model.predict(image_paths)
+        # keypoint_detection_results = self.keypoint_detection_model.predict(image_paths)
         text_detection_results = self.text_detection_model.predict(image_paths)
         text_recognition_results = self.text_recognition_model.predict(image_paths)
         return self.postprocess(

@@ -307,8 +307,12 @@ def deformable_resnet50(pretrained=True, **kwargs):
                    stage_with_dcn=[False, True, True, True],
                    **kwargs)
     if pretrained:
-        model.load_state_dict(model_zoo.load_url(
-            model_urls['resnet50'], map_location=lambda storage, loc: storage.cuda()), strict=False)
+        try:
+            model.load_state_dict(model_zoo.load_url(
+                model_urls['resnet50']), strict=False)
+        except:
+            model.load_state_dict(model_zoo.load_url(
+                model_urls['resnet50'], map_location=lambda storage, loc: storage.cuda()), strict=False)
     return model
 
 
