@@ -18,4 +18,10 @@ flask
 editdistance 
 scikit-image 
 imgaug==0.2.8
-
+pandas
+git+https://github.com/huggingface/pytorch-image-models.git
+loguru
+pycocotools
+tabulate
+pytorch_lightning
+lmdb
