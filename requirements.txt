@@ -25,3 +25,5 @@ pycocotools
 tabulate
 pytorch_lightning
 lmdb
+tensorboard
+scikit-learn
