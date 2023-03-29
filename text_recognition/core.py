@@ -1,3 +1,4 @@
+import numpy as np
 import torch
 from PIL import Image
 from tqdm import tqdm
@@ -16,7 +17,12 @@ class TextRecognitionModel:
     def predict(self, image_paths):
         labels, confidences = [], []
         for path in tqdm(image_paths):
-            img = Image.open(path).convert('RGB')
+            if isinstance(path, str):
+                img = Image.open(path).convert('RGB')
+            elif isinstance(path, Image.Image):
+                img = path
+            elif isinstance(path, np.ndarray):
+                img = Image.fromarray(path).convert('RGB')
             # Preprocess. Model expects a batch of images with shape: (B, C, H, W)
             img = self.img_transform(img).unsqueeze(0)
             img = img.to(self.device)

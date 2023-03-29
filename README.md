@@ -23,8 +23,10 @@
 3. Map labels in each axis to corresponding points
 
 #### Approach 4:
-1. Image classification model for graph classification, x_type/y_type classification
-2. Object detection model to detect keypoint and labels box
+1. Image classification model for graph classification, x_type/y_type classification -> DONE
+2. 
+    - Object detection model to detect keypoint and labels box
+    - maybe we should use segmentation model for label box instead to avoid overlap between label boxes/or 2 DB models to detect
 3. Text/word detection + recognition (ready solution) -> map with the boxes at step 2 to get x_labels and y_labels
 4. Map labels in each axis to corresponding points
 

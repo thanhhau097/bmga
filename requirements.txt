@@ -23,7 +23,7 @@ git+https://github.com/huggingface/pytorch-image-models.git
 loguru
 pycocotools
 tabulate
-pytorch_lightning
+pytorch-lightning~=1.6.5
 lmdb
 tensorboard
 scikit-learn
