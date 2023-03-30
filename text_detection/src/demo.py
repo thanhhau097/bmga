@@ -128,23 +128,36 @@ class Demo:
                         res.write(result + ',' + str(score) + "\n")
         
     def inference(self, image_path, visualize=False):
-        batch = dict()
-        batch['filename'] = [image_path]
-        img, original_shape = self.load_image(image_path)
-        batch['shape'] = [original_shape]
-        with torch.no_grad():
-            batch['image'] = img
-            pred = self.model.forward(batch, training=False)
-            output = self.structure.representer.represent(batch, pred, is_output_polygon=self.args['polygon']) 
-            # if not os.path.isdir(self.args['result_dir']):
-            #     os.mkdir(self.args['result_dir'])
-            # self.format_output(batch, output)
+        # check if image_path is folder of images
+        if os.path.isdir(image_path):
+            image_path = [os.path.join(image_path, x) for x in os.listdir(image_path)]
+        else:
+            image_path = [image_path]
+        
+        outputs = []
+        for path in image_path:
+            batch = dict()
+            batch['filename'] = [path]
+            img, original_shape = self.load_image(path)
+            batch['shape'] = [original_shape]
+            with torch.no_grad():
+                batch['image'] = img
+                pred = self.model.forward(batch, training=False)
+                output = self.structure.representer.represent(batch, pred, is_output_polygon=self.args['polygon']) 
+                
+                if visualize and self.structure.visualizer:
+                    if not os.path.isdir(self.args['result_dir']):
+                        os.mkdir(self.args['result_dir'])
+                    self.format_output(batch, output)
 
-            # if visualize and self.structure.visualizer:
-            #     vis_image = self.structure.visualizer.demo_visualize(image_path, output)
-            #     cv2.imwrite(os.path.join(self.args['result_dir'], image_path.split('/')[-1].split('.')[0]+'.jpg'), vis_image)
+                    vis_image = self.structure.visualizer.demo_visualize(path, output)
+                    cv2.imwrite(os.path.join(self.args['result_dir'], path.split('/')[-1].split('.')[0]+'.jpg'), vis_image)
 
-        return output
+            outputs.append(output)
+        
+        if len(outputs) == 1:
+            return outputs[0]
+        return outputs
 
 if __name__ == '__main__':
     main()
