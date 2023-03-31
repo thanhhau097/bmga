@@ -60,3 +60,7 @@ Validation:
 ```
 CUDA_VISIBLE_DEVICES=1 python -m donut.src.train --config ./donut/src/config/swinv2-bmga.yaml --output_dir outputs --do_eval --remove_unused_columns False --per_device_train_batch_size 8 --per_device_eval_batch_size 96 --learning_rate 2e-5 --warmup_ratio 0.01 --lr_scheduler_type cosine --save_strategy epoch --evaluation_strategy epoch --logging_strategy steps --logging_steps 20 --save_total_limit 2 --load_best_model_at_end True --fp16 --optim adamw_torch --weight_decay 1e-2 --num_train_epochs 20 --metric_for_best_model eval_loss --dataloader_num_workers=32 --max_grad_norm=1.0  --report_to none
 ```
+
+### Ensemble methods
+1. https://github.com/ZFTurbo/Weighted-Boxes-Fusion
+2. https://www.kaggle.com/code/pypiahmad/great-barrier-reef-yolox-yolov5-ensemble
