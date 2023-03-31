@@ -37,7 +37,7 @@ class Exp(MyExp):
         self.train_ann = "train_coco_annotations.json"
         self.val_ann = "val_coco_annotations.json"
 
-        self.num_classes = 5
+        self.num_classes = 3
         self.input_size = (640, 640)
 
         self.max_epoch = 300
