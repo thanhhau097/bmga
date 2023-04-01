@@ -16,7 +16,7 @@ class TextRecognitionModel:
 
     def predict(self, image_paths):
         labels, confidences = [], []
-        for path in tqdm(image_paths):
+        for path in image_paths:
             if isinstance(path, str):
                 img = Image.open(path).convert('RGB')
             elif isinstance(path, Image.Image):

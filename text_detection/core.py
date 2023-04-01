@@ -39,7 +39,7 @@ class TextDetectionModel:
 
     def predict(self, image_paths, visualize=False):
         all_outputs = []
-        for path in tqdm(image_paths):
+        for path in image_paths:
             outputs = self.predictor.inference(path, visualize)
             all_outputs.append(outputs)
 
