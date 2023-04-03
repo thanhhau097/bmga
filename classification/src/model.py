@@ -4,10 +4,10 @@ import torch.nn as nn
 
 
 class Model(nn.Module):
-    def __init__(self, model_name: str = "resnet50", n_classes=5):
+    def __init__(self, model_name: str = "resnet50", n_classes=5, pretrained=True):
         super().__init__()
         self.backbone = timm.create_model(
-            model_name, pretrained=True, in_chans=3, drop_path_rate=0.2
+            model_name, pretrained=pretrained, in_chans=3, drop_path_rate=0.2
         )
         self.backbone.reset_classifier(0, "avg")
 

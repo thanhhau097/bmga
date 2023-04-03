@@ -31,7 +31,7 @@ def collate_fn(batch):
 
 class ClassificationModel:
     def __init__(self, model_name, n_classes, weights_path):
-        self.model = Model(model_name, n_classes)
+        self.model = Model(model_name, n_classes, pretrained=False)
         self.model.load_state_dict(torch.load(weights_path))
         self.model.eval()
 
