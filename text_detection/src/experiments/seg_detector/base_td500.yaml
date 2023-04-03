@@ -1,14 +1,14 @@
 import:
-    - '/home/thanh/bmga/text_detection/src/experiments/base.yaml'
+    - './text_detection/src/experiments/base.yaml'
 package:
     - 'decoders.seg_detector_loss'
 define:
   - name: train_data
     class: ImageDataset
     data_dir:
-        - '/home/thanh/bmga/data'
+        - './data'
     data_list:
-        - '/home/thanh/bmga/data/train_list.txt'
+        - './data/train_list.txt'
     processes:
         - class: AugmentDetectionData
           augmenter_args:
@@ -30,9 +30,9 @@ define:
   - name: validate_data
     class: ImageDataset
     data_dir:
-        - '/home/thanh/bmga/data'
+        - './data'
     data_list:
-        - '/home/thanh/bmga/data/val_list.txt'
+        - './data/val_list.txt'
     processes:
         - class: AugmentDetectionData
           augmenter_args:

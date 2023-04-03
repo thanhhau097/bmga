@@ -1,15 +1,21 @@
+import json
 import numpy as np
 import torch
 from PIL import Image
 from tqdm import tqdm
 
 from .src.strhub.data.module import SceneTextDataModule
-
+from strhub.models.parseq.system import PARSeq
 
 class TextRecognitionModel:
-    def __init__(self, weights_path='baudm/parseq', model_name="parseq") -> None:
+    def __init__(self, weights_path='baudm/parseq', model_name="parseq", config_path=None) -> None:
         # Load model and image transforms
-        self.parseq = torch.hub.load(weights_path, model_name, pretrained=True).eval()
+        # self.parseq = torch.hub.load(weights_path, model_name, pretrained=True).eval()
+        with open(config_path) as f:
+            config = json.load(f)
+        self.parseq = PARSeq(**config)
+        state_dict = torch.load(weights_path, map_location="cpu")
+        self.parseq.load_state_dict(state_dict, strict=True)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.parseq.to(self.device)
         self.img_transform = SceneTextDataModule.get_transform(self.parseq.hparams.img_size)
