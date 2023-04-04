@@ -42,18 +42,23 @@
 4. Map labels in each axis to corresponding points
 
 ### External data
-1. https://chartinfo.github.io/toolsanddata.html
-2. https://iitmnlp.github.io/PlotQA/ + https://arxiv.org/pdf/1909.00997.pdf
-3. https://arxiv.org/pdf/2203.10244v1.pdf
-4. https://github.com/JasonObeid/Chart2Text
+1. https://chartinfo.github.io/toolsanddata.html: good dataset, need to filter
+2. https://iitmnlp.github.io/PlotQA/ + https://arxiv.org/pdf/1909.00997.pdf: good dataset, need to filter
+3. https://arxiv.org/pdf/2203.10244v1.pdf: https://github.com/vis-nlp/ChartQA/tree/main/ChartQA%20Dataset + https://drive.google.com/file/d/17-aqtiq_KJ16PIGOp30W0y6OJNax6SVT/view: good, need to filter
+4. FIGUREQA: https://arxiv.org/pdf/1710.07300.pdf + https://github.com/Maluuba/FigureQA: good, need to filter: https://www.microsoft.com/en-hk/download/details.aspx?id=100635: good, need to filter
+5. DVQA: https://arxiv.org/pdf/1801.08163.pdf
+6. 
+    - https://github.com/JasonObeid/Chart2Text: only have chart type and final info
+    - https://github.com/vis-nlp/Chart-to-text: only have final info
+
+#### Pretrained data:
+1. https://github.com/tingyaohsu/SciCap
 
 ### External tools
 1. https://github.com/kdavila/ChartInfo_annotation_tools: https://www.dropbox.com/s/fqnoq6bwnkgfqa9/ICDAR2023_CHARTINFO_UB_UNITEC_PMC_TRAIN_V1.0.zip
 
 ### Data generation
 1. https://squid.org/rpg-random-generator
-2. 
-
 
 ### Command
 Neptune
