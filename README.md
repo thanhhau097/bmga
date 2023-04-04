@@ -1,5 +1,16 @@
 ### 
 
+### TODO:
+- [ ] Collect external data
+- [ ] Generate data for training
+- [ ] Model Ensemble
+    - [ ] Classification: graph, x_type
+    - [ ] Object detection: keypoint
+    - [ ] Text detection: x_label, y_label
+- [ ] Post processing
+    - [ ] Improve line detection opencv
+    - [ ] Hanle multiple words in one label box using DB model
+
 ### Approach
 
 #### Approach 1: End-to-End solution using Image to Text model
