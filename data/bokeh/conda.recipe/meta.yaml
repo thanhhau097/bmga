@@ -1,0 +1,99 @@
+{% set data = load_setup_py_data() %}
+
+package:
+  name: bokeh
+  version: {{ data['version'] }}
+
+source:
+  path: ..
+
+build:
+  entry_points:
+    - bokeh = bokeh.__main__:main
+
+extra:
+  channels:
+    - bokeh
+    - conda-forge
+
+requirements:
+  build:
+    - python
+    - setuptools
+    - nodejs >=6.6.0
+    - certifi
+    - pycurl
+    - packaging
+    - six
+    - python-dateutil
+    - numpy
+    - yaml
+    - pyyaml
+    - jinja2
+    - twine
+    - tornado >=4.3
+
+  run:
+    - python
+
+    {% for dep in data['install_requires'] %}
+    - {{ dep.lower() }}
+    {% endfor %}
+
+    # meta-package installs futures for py 2.7 but not for py 3.x
+    # NOTE: once https://github.com/conda/conda-build/issues/1662 is fixed then
+    # this should be able to be removed
+    - futures-compat
+
+test:
+  requires:
+    # docs
+    - pygments
+    - sphinx >=1.4
+    # pyyaml installed by bokeh
+    # packaging installed by bokeh
+
+    # tests
+    - colorama
+    - coverage
+    - flake8
+    - lxml
+    - mock
+    - packaging
+    - pandas
+    - pytest >=3.0.2
+    - pytest-cov >=1.8.1     [unix]
+    - pytest-selenium==1.6.0 [unix]
+    - pytest-html==1.7       [unix]
+    - selenium==2.53.5
+    - pytest-xdist
+    - pytest-rerunfailures
+    - beautiful-soup         [unix]
+    - scipy
+    - pillow
+    - boto
+    - nodejs >=6.6.0
+    # pyyaml installed by bokeh
+    # jinja2 installed by bokeh
+
+    # examples
+    - jupyter
+    - matplotlib
+    - sympy
+    - scikit-learn
+    - networkx
+    - icalendar          [unix]
+    - flask
+    - flexx
+
+
+  commands:
+    - bokeh -h
+
+  imports:
+    - bokeh
+
+about:
+  home: {{ data['url'] }}
+  license: {{ data['license'] }}
+  summary: {{ data['description'] }}
