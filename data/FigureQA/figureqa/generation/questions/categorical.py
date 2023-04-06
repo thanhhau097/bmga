@@ -4,7 +4,7 @@ import random
 
 from collections import Counter
 
-from utils import augment_questions
+from .utils import augment_questions
 
 
 def _get_cat_noncat_bars(bars_data):
@@ -43,7 +43,7 @@ def _generate(original_data, cat, noncat, color_map=None):
     if min_category[1] != max_category[1]:
 
         not_min_category, not_max_category, greater, less = None, None, None, None
-        indices_to_try = np.random.permutation(range(len(data))).tolist()
+        indices_to_try = np.random.permutation(range(len(list(data)))).tolist()
 
         for i in range(1, len(indices_to_try)):
             if not_min_category and not_max_category and greater and less:
@@ -111,19 +111,19 @@ def _generate(original_data, cat, noncat, color_map=None):
 
     # Get median
     if len(sorted_categories) % 2 == 1:
-        median_low_index = len(sorted_categories) / 2
+        median_low_index = len(sorted_categories) // 2
         median_high_index = median_low_index
     else:
-        median_high_index = len(sorted_categories) / 2
+        median_high_index = len(sorted_categories) // 2
         median_low_index = median_high_index - 1
 
     median_low = sorted_categories[median_low_index][0]
     median_high = sorted_categories[median_high_index][0]
 
-    not_median_low = sorted_categories[random.choice(range(median_low_index) \
-                        + range(median_low_index + 1, len(sorted_categories) ))][0]
-    not_median_high = sorted_categories[random.choice(range(median_high_index) \
-                        + range(median_high_index + 1, len(sorted_categories) ))][0]
+    not_median_low = sorted_categories[random.choice(list(range(median_low_index)) \
+                        + list(range(median_low_index + 1, len(sorted_categories) )))][0]
+    not_median_high = sorted_categories[random.choice(list(range(median_high_index)) \
+                        + list(range(median_high_index + 1, len(sorted_categories) )))][0]
 
     qa_pairs += [{
                     'question_string': "Is %s the high median?" % median_high, 'question_id': 5,

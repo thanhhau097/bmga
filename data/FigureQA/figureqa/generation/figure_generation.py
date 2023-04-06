@@ -93,8 +93,14 @@ def generate_figures (
                 'total_distinct_colors': source_data_json['total_distinct_colors']
             }, f)
 
+        class MapEncoder(json.JSONEncoder):
+            def default(self, obj):
+                if isinstance(obj, map):
+                    return list(obj)
+                return super(MapEncoder, self).default(obj)
+
         with open(annotations_json_file, 'w') as f:
-            json.dump(all_plot_data, f)
+            json.dump(all_plot_data, f, cls=MapEncoder)
 
         if add_bboxes:
             all_plot_data['image_index'] = fig_id

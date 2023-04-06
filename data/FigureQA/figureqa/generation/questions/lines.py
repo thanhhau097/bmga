@@ -5,7 +5,7 @@ import random
 
 from sklearn.metrics import auc
 
-from utils import augment_questions
+from .utils import augment_questions
 
 def _calculate_roughness(x, y):
 
