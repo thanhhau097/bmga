@@ -2,6 +2,7 @@
 from __future__ import division
 
 import copy
+import random
 
 from bokeh.io import export_png_and_data    # Custom function
 from bokeh.models import ColumnDataSource, LabelSet, Legend
@@ -105,9 +106,14 @@ class LinePlot (object):
         # Create the column data source and glyphs scatter data
         legend_items = []
         for i, point_set in enumerate(data):
+            line_width = random.randint(1, 6)
             col_data = ColumnDataSource({ 'x': point_set['x'], 'y': point_set['y'], 's': [10]*len(point_set['x'])})
-            glyph = Line(x='x', y='y', line_width=2, line_color=point_set['color'], name=point_set['label'],
-                            line_dash=visuals['line_styles'][i])
+            glyph = Line(x='x', y='y', line_width=line_width, line_color=point_set['color'], name=point_set['label'],
+                            line_dash=visuals['line_styles'][i],
+                            line_join=random.choice(['miter', 'round', 'bevel']),
+                            line_cap=random.choice(['butt', 'round', 'square']),
+                            line_alpha=random.uniform(0.5, 1.0)
+                        )
             renderer = p.add_glyph(col_data, glyph)
             renderer.name = glyph.name
             legend_items.append((renderer.name, [renderer]))
