@@ -33,6 +33,8 @@ pip install jinja2==3.0.1
 Running generation:
 
 ```
+source ~/.bashrc
+conda activate env38
 export OPENSSL_CONF=/etc/ssl/
 
 python figureqa/generation/generate_dataset.py ./config/custom_config.yaml 
