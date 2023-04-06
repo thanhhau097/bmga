@@ -10,3 +10,5 @@
 *.DS_Store
 npm-debug.log
 /test/.generated_defaults/
+node_modules
+build
