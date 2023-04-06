@@ -27,7 +27,8 @@ def _is_strictly_less_than(series_a, series_b):
 
 
 # (label, value)
-def _get_min_max_non(tuples): 
+def _get_min_max_non(tuples):
+    tuples = list(tuples)
     sorted_tuples = sorted(tuples, key=lambda x: x[1])
     min_tup = sorted_tuples[0]
     max_tup = sorted_tuples[-1]

@@ -39,17 +39,17 @@ def get_grid_plot_data(title="title", xlabel="xaxis_label", ylabel="yaxis_label"
 
 class HBarGraphCategorical (object):
 
-    def __init__(self, data, visuals={}):
+    def __init__(self, data, visuals={}, title=TITLE_LABEL, x_axis_label=X_AXIS_LABEL, y_axis_label=Y_AXIS_LABEL):
 
         # Set up the plot
-        p = figure(plot_width=visuals['figure_width'], plot_height=visuals['figure_height'], title=TITLE_LABEL, toolbar_location=None, y_range=data['y'])
+        p = figure(plot_width=visuals['figure_width'], plot_height=visuals['figure_height'], title=title, toolbar_location=None, y_range=data['y'])
         p.hbar(y=data['y'], height=0.5, left=0, right=data['x'], fill_color=data['colors'], line_color=None, name="the_bars")
         
         # Set identifiers for the figure elements
         p.xaxis.name = X_AXIS_ID
-        p.xaxis.axis_label = X_AXIS_LABEL
+        p.xaxis.axis_label = x_axis_label
         p.yaxis.name = Y_AXIS_ID
-        p.yaxis.axis_label = Y_AXIS_LABEL
+        p.yaxis.axis_label = y_axis_label
         p.title.name = TITLE_ID
 
         if visuals['draw_gridlines']:
@@ -68,18 +68,18 @@ class HBarGraphCategorical (object):
 
 class VBarGraphCategorical (object):
 
-    def __init__(self, data, visuals={}):
+    def __init__(self, data, visuals={}, title=TITLE_LABEL, x_axis_label=X_AXIS_LABEL, y_axis_label=Y_AXIS_LABEL):
 
         # Set up the plot
-        p = figure(plot_width=visuals['figure_width'], plot_height=visuals['figure_height'], title=TITLE_LABEL, toolbar_location=None, x_range=data['x'])
+        p = figure(plot_width=visuals['figure_width'], plot_height=visuals['figure_height'], title=title, toolbar_location=None, x_range=data['x'])
         p.vbar(x=data['x'], width=0.5, bottom=0, top=data['y'], fill_color=data['colors'], line_color=None, name="the_bars")
         
         # Set identifiers for the figure elements
         p.xaxis.name = X_AXIS_ID
-        p.xaxis.axis_label = X_AXIS_LABEL
+        p.xaxis.axis_label = x_axis_label
         p.xaxis.major_label_orientation = "vertical"
         p.yaxis.name = Y_AXIS_ID
-        p.yaxis.axis_label = Y_AXIS_LABEL
+        p.yaxis.axis_label = y_axis_label
         p.title.name = TITLE_ID
 
         if visuals['draw_gridlines']:
@@ -98,9 +98,9 @@ class VBarGraphCategorical (object):
 
 class LinePlot (object):
 
-    def __init__(self, data, visuals={}):
+    def __init__(self, data, visuals={}, title=TITLE_LABEL, x_axis_label=X_AXIS_LABEL, y_axis_label=Y_AXIS_LABEL):
 
-        p = figure(plot_width=visuals['figure_width'], plot_height=visuals['figure_height'], title=TITLE_LABEL, toolbar_location=None)
+        p = figure(plot_width=visuals['figure_width'], plot_height=visuals['figure_height'], title=title, toolbar_location=None)
 
         # Create the column data source and glyphs scatter data
         legend_items = []
@@ -129,9 +129,9 @@ class LinePlot (object):
 
         # Set identifiers for the figure elements
         p.xaxis.name = X_AXIS_ID
-        p.xaxis.axis_label = X_AXIS_LABEL
+        p.xaxis.axis_label = x_axis_label
         p.yaxis.name = Y_AXIS_ID
-        p.yaxis.axis_label = Y_AXIS_LABEL
+        p.yaxis.axis_label = y_axis_label
         p.title.name = TITLE_ID
 
         if visuals['draw_gridlines']:
@@ -150,9 +150,9 @@ class LinePlot (object):
 
 class DotLinePlot (object):
 
-    def __init__(self, data, visuals={}):
+    def __init__(self, data, visuals={}, title=TITLE_LABEL, x_axis_label=X_AXIS_LABEL, y_axis_label=Y_AXIS_LABEL):
 
-        p = figure(plot_width=visuals['figure_width'], plot_height=visuals['figure_height'], title=TITLE_LABEL, toolbar_location=None)
+        p = figure(plot_width=visuals['figure_width'], plot_height=visuals['figure_height'], title=title, toolbar_location=None)
 
         # Create the column data source and glyphs scatter data
         legend_items = []
@@ -163,26 +163,26 @@ class DotLinePlot (object):
             renderer.name = glyph.name
             legend_items.append((renderer.name, [renderer]))
 
-        if 'draw_legend' in visuals and visuals['draw_legend']:
+        # if 'draw_legend' in visuals and visuals['draw_legend']:
 
-            alpha = 1.0 if visuals['legend_border'] else 0.0
-            border_color = "black" if visuals['legend_border'] else None
+        #     alpha = 1.0 if visuals['legend_border'] else 0.0
+        #     border_color = "black" if visuals['legend_border'] else None
 
-            legend = Legend(items=legend_items, location=visuals['legend_position'], name="the_legend", margin=0,
-                            background_fill_alpha=alpha, border_line_color=border_color,
-                            label_text_font_size=visuals['legend_label_font_size'],
-                            orientation=visuals['legend_orientation'])
+        #     legend = Legend(items=legend_items, location=visuals['legend_position'], name="the_legend", margin=0,
+        #                     background_fill_alpha=alpha, border_line_color=border_color,
+        #                     label_text_font_size=visuals['legend_label_font_size'],
+        #                     orientation=visuals['legend_orientation'])
 
-            if visuals['legend_inside']:
-                p.add_layout(legend)
-            else:
-                p.add_layout(legend, visuals['legend_layout_position'])
+        #     if visuals['legend_inside']:
+        #         p.add_layout(legend)
+        #     else:
+        #         p.add_layout(legend, visuals['legend_layout_position'])
 
         # Set identifiers for the figure elements
         p.xaxis.name = X_AXIS_ID
-        p.xaxis.axis_label = X_AXIS_LABEL
+        p.xaxis.axis_label = x_axis_label
         p.yaxis.name = Y_AXIS_ID
-        p.yaxis.axis_label = Y_AXIS_LABEL
+        p.yaxis.axis_label = y_axis_label
         p.title.name = TITLE_ID
 
         if visuals['draw_gridlines']:
@@ -201,7 +201,7 @@ class DotLinePlot (object):
 
 class Pie (object):
 
-    def __init__(self, data, visuals={}):
+    def __init__(self, data, visuals={}, title=TITLE_LABEL, x_axis_label=X_AXIS_LABEL, y_axis_label=Y_AXIS_LABEL):
 
         label_data = { 'labels': data['labels'], 'x': data['label_x'], 'y': data['label_y'] }
         wedge_data = { 'starts': data['starts'], 'ends': data['ends'], 'colors': data['colors'], 'spans': data['spans'], 'labels': data['labels'] }
@@ -226,7 +226,7 @@ class Pie (object):
         x_range = (-default_rad*aspect - diff, default_rad*aspect + diff)
         y_range = (-default_rad - diff, default_rad + diff)
 
-        p = figure(plot_width=width, plot_height=visuals['figure_height'], x_range=x_range, y_range=y_range, title=" " + TITLE_LABEL, toolbar_location=None)
+        p = figure(plot_width=width, plot_height=visuals['figure_height'], x_range=x_range, y_range=y_range, title=" " + title, toolbar_location=None)
         
         glyphs = []
         for i in range(len(data['colors'])):
