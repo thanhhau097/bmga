@@ -13,16 +13,27 @@ def augment_questions(qa_pairs, color_map):
     for qa in qa_pairs:
 
         has_color2 = qa['color2_name'] != "--None--"
-        cid_1 = color_map[qa['color1_name']]['id']
+        # random color
+        if qa['color1_name'] in color_map:
+            color1_name = qa['color1_name']
+        else:
+            color1_name = random.choice(list(color_map.keys()))
+
+        if qa['color2_name'] in color_map:
+            color2_name = qa['color2_name']
+        else:
+            color2_name = random.choice(list(color_map.keys()))
+
+        cid_1 = color_map[color1_name]['id']
 
         if has_color2:
-            cid_2 = color_map[qa['color2_name']]['id']
+            cid_2 = color_map[color2_name]['id']
 
         qa['color1_id'] = cid_1
-        qa['color1_rgb'] = color_map[qa['color1_name']]['rgb']
+        qa['color1_rgb'] = color_map[color1_name]['rgb']
 
         qa['color2_id'] = cid_2 if has_color2 else -1
-        qa['color2_rgb'] = color_map[qa['color2_name']]['rgb'] if has_color2 else [-1, -1, -1]
+        qa['color2_rgb'] = color_map[color2_name]['rgb'] if has_color2 else [-1, -1, -1]
 
 
 def balance_questions_by_qid(all_data):
