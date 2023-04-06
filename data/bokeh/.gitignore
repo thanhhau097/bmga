@@ -114,3 +114,5 @@ win-64
 bokeh/example_graphs/*.json
 bokeh/example_graphs/*.png
 bokeh/example_graphs/*.html
+
+node_modules/
