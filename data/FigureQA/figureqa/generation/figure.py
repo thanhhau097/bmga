@@ -112,20 +112,20 @@ class LinePlot (object):
             renderer.name = glyph.name
             legend_items.append((renderer.name, [renderer]))
 
-        if 'draw_legend' in visuals and visuals['draw_legend']:
+        # if 'draw_legend' in visuals and visuals['draw_legend']:
 
-            alpha = 1.0 if visuals['legend_border'] else 0.0
-            border_color = "black" if visuals['legend_border'] else None
+        #     alpha = 1.0 if visuals['legend_border'] else 0.0
+        #     border_color = "black" if visuals['legend_border'] else None
 
-            legend = Legend(items=legend_items, location=visuals['legend_position'], name="the_legend", margin=0,
-                            background_fill_alpha=alpha, border_line_color=border_color, border_line_alpha=1.0,
-                            label_text_font_size=visuals['legend_label_font_size'],
-                            orientation=visuals['legend_orientation'])
+        #     legend = Legend(items=legend_items, location=visuals['legend_position'], name="the_legend", margin=0,
+        #                     background_fill_alpha=alpha, border_line_color=border_color, border_line_alpha=1.0,
+        #                     label_text_font_size=visuals['legend_label_font_size'],
+        #                     orientation=visuals['legend_orientation'])
 
-            if visuals['legend_inside']:
-                p.add_layout(legend)
-            else:
-                p.add_layout(legend, visuals['legend_layout_position'])
+        #     if visuals['legend_inside']:
+        #         p.add_layout(legend)
+        #     else:
+        #         p.add_layout(legend, visuals['legend_layout_position'])
 
         # Set identifiers for the figure elements
         p.xaxis.name = X_AXIS_ID
