@@ -8,6 +8,8 @@ import yaml
 
 from selenium.webdriver.remote.webdriver import WebDriver as RemoteWebDriver
 from tqdm import tqdm
+import random
+from wonderwords import RandomWord
 
 from bokeh.io import export_png_and_data
 from data_utils import combine_source_and_rendered_data
@@ -50,6 +52,8 @@ def generate_figures (
     with open(source_data_json, 'r') as f:
         source_data_json = json.load(f)
 
+    r = RandomWord()
+
     for fig_id, source in tqdm(iter(enumerate(source_data_json['data'])), total=len(source_data_json['data']), desc="Plotting figures"):
 
         point_sets = source['data']
@@ -57,16 +61,22 @@ def generate_figures (
         fig = None
         fig_type = source['type']
 
+
+        N = 10
+        title = " ".join(r.random_words(random.randint(1, 10)))
+        x_axis_label = " ".join(r.random_words(random.randint(1, 10)))
+        y_axis_label = " ".join(r.random_words(random.randint(1, 10)))
+
         if fig_type == 'vbar_categorical':
-            fig = VBarGraphCategorical(point_sets[0], source['visuals'])
+            fig = VBarGraphCategorical(point_sets[0], source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
         elif fig_type == 'hbar_categorical':
-            fig = HBarGraphCategorical(point_sets[0], source['visuals'])
+            fig = HBarGraphCategorical(point_sets[0], source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
         elif fig_type == 'line':
-            fig = LinePlot(point_sets, source['visuals'])
+            fig = LinePlot(point_sets, source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
         elif fig_type == 'dot_line':
-            fig = DotLinePlot(point_sets, source['visuals'])
+            fig = DotLinePlot(point_sets, source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
         elif fig_type == 'pie':
-            fig = Pie(point_sets[0], source['visuals'])
+            fig = Pie(point_sets[0], source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
 
         if not fig:
             continue
