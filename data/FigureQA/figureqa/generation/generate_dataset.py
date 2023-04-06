@@ -22,7 +22,7 @@ def main(generation_yaml, share_webdriver):
     logging.basicConfig(level=logging.INFO)
 
     with open(generation_yaml, 'r') as f:
-        config = yaml.load(f)
+        config = yaml.full_load(f)
 
     # Create a single webdriver for serial generation
     webdriver = seldriver.PhantomJS() if share_webdriver else None

@@ -26,4 +26,14 @@ Install figureQA
 git clone https://github.com/Maluuba/FigureQA.git
 cd FigureQA
 pip install -r requirements.txt
+
+pip install jinja2==3.0.1
+```
+
+Running generation:
+
+```
+export OPENSSL_CONF=/etc/ssl/
+
+python figureqa/generation/generate_dataset.py ./config/custom_config.yaml 
 ```

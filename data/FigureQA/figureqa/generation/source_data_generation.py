@@ -509,19 +509,21 @@ def generate_source_data (
     ):
 
     PLOT_KEY_PAIRS = [("vbar", "vbar_categorical"), ("hbar", "hbar_categorical"), ("pie", None), ("line", None), ("dot_line", None)]
-
-    if all([locals()[arg_name] == 0 for arg_name, actual_name in PLOT_KEY_PAIRS]) \
-            or any([locals()[arg_name] < 0 for arg_name, actual_name in PLOT_KEY_PAIRS]):
+    print("locals(): ", locals())
+    print("locals().keys(): ", locals().keys())
+    local_vars = locals()
+    if all([local_vars[arg_name] == 0 for arg_name, actual_name in PLOT_KEY_PAIRS]) \
+            or any([local_vars[arg_name] < 0 for arg_name, actual_name in PLOT_KEY_PAIRS]):
         raise Exception("Invalid number of figures! Need at least one plot type specified!")
 
     global data_config
     global common_config
 
     with open(data_config_yaml, 'r') as f:
-        data_config = yaml.load(f)
+        data_config = yaml.full_load(f)
 
     with open(common_config_yaml, 'r') as f:
-        common_config = yaml.load(f)
+        common_config = yaml.full_load(f)
 
     # Set the seed
     np.random.seed(seed)
@@ -559,12 +561,22 @@ def generate_source_data (
     if not keep_all_questions:
         balance_questions_by_qid(generated_data)
 
+    class NpEncoder(json.JSONEncoder):
+        def default(self, obj):
+            if isinstance(obj, np.integer):
+                return int(obj)
+            if isinstance(obj, np.floating):
+                return float(obj)
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+            return super(NpEncoder, self).default(obj)
+
     with open(output_file_json, 'w') as f:
         json.dump({
             'data': generated_data, 
             'total_distinct_questions': NUM_DISTINCT_QS,
             'total_distinct_colors': len(color_map)
-        }, f)
+        }, f, cls=NpEncoder)
 
 
 @click.command()
