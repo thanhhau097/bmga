@@ -64,7 +64,7 @@ class Exp(MyExp):
             name="train/images",
             preproc=TrainTransform(
                 max_labels=50,
-                flip_prob=self.flip_prob,
+                flip_prob=0,
                 hsv_prob=self.hsv_prob
             ),
             cache=cache,
