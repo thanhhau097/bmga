@@ -1,8 +1,8 @@
 ### 
 
 ### TODO:
-- [ ] Collect external data
-- [ ] Generate data for training
+- [x] Collect external data
+- [x] Generate data for training
 - [ ] Model Ensemble
     - [ ] Classification: graph, x_type
     - [ ] Object detection: keypoint
@@ -10,7 +10,7 @@
 - [ ] Post processing
     - [ ] Improve line detection opencv
     - [ ] Hanle multiple words in one label box using DB model
-- [ ] Post process for line data generation, only keep points that are corresponding to the x labels
+- [x] Post process for line data generation, only keep points that are corresponding to the x labels
 - [ ] Convert horizontal bar data to vertical bar data to train vertical bar only
 
 ### Approach
