@@ -55,69 +55,71 @@ def generate_figures (
     r = RandomWord()
 
     for fig_id, source in tqdm(iter(enumerate(source_data_json['data'])), total=len(source_data_json['data']), desc="Plotting figures"):
+        try:
+            point_sets = source['data']
 
-        point_sets = source['data']
-
-        fig = None
-        fig_type = source['type']
+            fig = None
+            fig_type = source['type']
 
 
-        N = 10
-        title = " ".join(r.random_words(random.randint(1, 10)))
-        x_axis_label = " ".join(r.random_words(random.randint(1, 10)))
-        y_axis_label = " ".join(r.random_words(random.randint(1, 10)))
+            N = 10
+            title = " ".join(r.random_words(random.randint(1, 10)))
+            x_axis_label = " ".join(r.random_words(random.randint(1, 10)))
+            y_axis_label = " ".join(r.random_words(random.randint(1, 10)))
 
-        if fig_type == 'vbar_categorical':
-            fig = VBarGraphCategorical(point_sets[0], source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
-        elif fig_type == 'hbar_categorical':
-            fig = HBarGraphCategorical(point_sets[0], source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
-        elif fig_type == 'line':
-            fig = LinePlot(point_sets, source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
-        elif fig_type == 'dot_line':
-            fig = DotLinePlot(point_sets, source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
-        elif fig_type == 'pie':
-            fig = Pie(point_sets[0], source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
+            if fig_type == 'vbar_categorical':
+                fig = VBarGraphCategorical(point_sets[0], source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
+            elif fig_type == 'hbar_categorical':
+                fig = HBarGraphCategorical(point_sets[0], source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
+            elif fig_type == 'line':
+                fig = LinePlot(point_sets, source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
+            elif fig_type == 'dot_line':
+                fig = DotLinePlot(point_sets, source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
+            elif fig_type == 'pie':
+                fig = Pie(point_sets[0], source['visuals'], title=title, x_axis_label=x_axis_label, y_axis_label=y_axis_label)
 
-        if not fig:
-            continue
+            if not fig:
+                continue
 
-        html_file = os.path.join(html_dir, "%d_%s.html" % (fig_id, fig_type))
-        png_file = os.path.join(png_dir, "%d_%s.png" % (fig_id, fig_type))
+            html_file = os.path.join(html_dir, "%d_%s.html" % (fig_id, fig_type))
+            png_file = os.path.join(png_dir, "%d_%s.png" % (fig_id, fig_type))
 
-        # Export to HTML, PNG, and get rendered data
-        rendered_data = export_png_and_data(fig.figure, png_file, html_file, webdriver)
+            # Export to HTML, PNG, and get rendered data
+            rendered_data = export_png_and_data(fig.figure, png_file, html_file, webdriver)
 
-        all_plot_data = combine_source_and_rendered_data(source, rendered_data)
+            all_plot_data = combine_source_and_rendered_data(source, rendered_data)
 
-        qa_json_file = os.path.join(qa_json_dir, "%s_%s.json" % (fig_id, fig_type))
-        annotations_json_file = os.path.join(annotations_json_dir, "%d_%s_annotations.json" % (fig_id, fig_type))
+            qa_json_file = os.path.join(qa_json_dir, "%s_%s.json" % (fig_id, fig_type))
+            annotations_json_file = os.path.join(annotations_json_dir, "%d_%s_annotations.json" % (fig_id, fig_type))
 
-        for qa in source['qa_pairs']:
-            qa['image'] = os.path.basename(png_file)
-            qa['annotations'] = os.path.basename(annotations_json_file)
+            for qa in source['qa_pairs']:
+                qa['image'] = os.path.basename(png_file)
+                qa['annotations'] = os.path.basename(annotations_json_file)
 
-        with open(qa_json_file, 'w') as f:
-            json.dump({
-                'qa_pairs': source['qa_pairs'], 
-                'total_distinct_questions': source_data_json['total_distinct_questions'],
-                'total_distinct_colors': source_data_json['total_distinct_colors']
-            }, f)
+            with open(qa_json_file, 'w') as f:
+                json.dump({
+                    'qa_pairs': source['qa_pairs'], 
+                    'total_distinct_questions': source_data_json['total_distinct_questions'],
+                    'total_distinct_colors': source_data_json['total_distinct_colors']
+                }, f)
 
-        class MapEncoder(json.JSONEncoder):
-            def default(self, obj):
-                if isinstance(obj, map):
-                    return list(obj)
-                return super(MapEncoder, self).default(obj)
+            class MapEncoder(json.JSONEncoder):
+                def default(self, obj):
+                    if isinstance(obj, map):
+                        return list(obj)
+                    return super(MapEncoder, self).default(obj)
 
-        with open(annotations_json_file, 'w') as f:
-            json.dump(all_plot_data, f, cls=MapEncoder)
+            with open(annotations_json_file, 'w') as f:
+                json.dump(all_plot_data, f, cls=MapEncoder)
 
-        if add_bboxes:
-            all_plot_data['image_index'] = fig_id
-            generate_all_images_with_bboxes_for_plot(all_plot_data, png_file, bbox_img_dir, 'red', load_image=True)
+            if add_bboxes:
+                all_plot_data['image_index'] = fig_id
+                generate_all_images_with_bboxes_for_plot(all_plot_data, png_file, bbox_img_dir, 'red', load_image=True)
 
-        # Cleanup
-        os.remove(html_file)
+            # Cleanup
+            os.remove(html_file)
+        except Exception as e:
+            print("Error generating figure %d: %s" % (fig_id, e))
 
     # Kill the newly created webdriver
     if not supplied_webdriver:
