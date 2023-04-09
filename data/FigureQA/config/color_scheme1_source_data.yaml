@@ -4,7 +4,7 @@ vbar_categorical:
   x_distn: ["linear"]
   # shape: ["random", "random", "random", "random", "linear_inc", "linear_dec", "cluster"]
   shape: ["random", "random", "random", "random"]
-  color_sources: ["resources/random_text_color.txt"]
+  color_sources: ["resources/random_text_color_2.txt"]
 
 hbar_categorical:
   y_range: [0, 100000]
