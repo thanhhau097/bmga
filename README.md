@@ -15,6 +15,7 @@
 - [ ] With external data, we can:
     - Use original data + all chartinfo data to train x/y labels DB model and x/y points detection model
     - Use original data + filtered chartinfo data to train value boxes detection model
+    - Error in ChartInfo data: with the y labels that contain %, the value boxes are wrong
 
 ### Approach
 
