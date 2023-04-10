@@ -18,6 +18,7 @@ class TextRecognitionModel:
         self.parseq.load_state_dict(state_dict, strict=True)
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.parseq.to(self.device)
+        self.parseq.eval()
         self.img_transform = SceneTextDataModule.get_transform(self.parseq.hparams.img_size)
 
     def predict(self, image_paths):
