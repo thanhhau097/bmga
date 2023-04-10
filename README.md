@@ -12,6 +12,9 @@
     - [ ] Hanle multiple words in one label box using DB model
 - [x] Post process for line data generation, only keep points that are corresponding to the x labels
 - [ ] Convert horizontal bar data to vertical bar data to train vertical bar only
+- [ ] With external data, we can:
+    - Use original data + all chartinfo data to train x/y labels DB model and x/y points detection model
+    - Use original data + filtered chartinfo data to train value boxes detection model
 
 ### Approach
 
