@@ -1,14 +1,14 @@
 import:
-    - './experiments/base.yaml'
+    - './text_detection/src/experiments/base.yaml'
 package:
     - 'decoders.seg_detector_loss'
 define:
   - name: train_data
     class: ImageDataset
     data_dir:
-        - '../../data/external_data/all/'
+        - '../../data/'
     data_list:
-        - '../../data/external_data/all/train_list.txt'
+        - '../../data/train_list.txt'
     processes:
         - class: AugmentDetectionData
           augmenter_args:
@@ -30,9 +30,9 @@ define:
   - name: validate_data
     class: ImageDataset
     data_dir:
-        - '../../data/external_data/all/'
+        - '../../data/'
     data_list:
-        - '../../data/external_data/all/val_list.txt'
+        - '../../data/val_list.txt'
     processes:
         - class: AugmentDetectionData
           augmenter_args:
