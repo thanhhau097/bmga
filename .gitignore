@@ -3,4 +3,4 @@ outputs*
 **/__pycache__*
 .neptune/
 weights/
-workspace
+workspacedata/bokeh/node_modules
