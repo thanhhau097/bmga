@@ -1,5 +1,5 @@
 import:
-    - './text_detection/src/experiments/seg_detector/base_td500.yaml'
+    - './text_detection/src/experiments/seg_detector/base_td500_inference.yaml'
 package: []
 define:
   - name: 'Experiment'
