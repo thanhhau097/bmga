@@ -20,6 +20,10 @@
     - Use original data + filtered chartinfo data to train value boxes detection model
     - Error in ChartInfo data: with the y labels that contain %, the value boxes are wrong
 
+- [ ] Current errors:
+    - [ ] Vertical bar: histogram charts are all wrong, missing x labels
+    - [ ] Line chart: wrong line detection
+
 ### Approach
 
 #### Approach 1: End-to-End solution using Image to Text model
