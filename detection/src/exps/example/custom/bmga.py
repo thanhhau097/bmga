@@ -19,16 +19,16 @@ class Exp(MyExp):
         # self.width = 0.50
 
         # yolox-m
-        self.depth = 0.67
-        self.width = 0.75
+        # self.depth = 0.67
+        # self.width = 0.75
 
         # yolox-l
         # self.depth = 1.0
         # self.width = 1.0
 
         # yolox-x
-        # self.depth = 1.33
-        # self.width = 1.25
+        self.depth = 1.33
+        self.width = 1.25
 
         self.exp_name = os.path.split(os.path.realpath(__file__))[1].split(".")[0]
 
