@@ -12,7 +12,7 @@
 - [ ] Improve scatter model
 
 - [ ] Hanle multiple words in one label box using DB model
-- [ ] Rotate horizontal labels before OCR (if necessary)
+- [ ] Rotate horizontal (maybe all?) labels before OCR (if necessary)
 
 - [ ] Vertical bar: histogram charts are all wrong on y, missing x labels
 
