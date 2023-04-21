@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from modules import (
+from .modules import (
     TimmUniversalEncoder, 
     DeepLabV3Decoder, 
     DeepLabV3PlusDecoderFix, 
