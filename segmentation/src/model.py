@@ -15,18 +15,18 @@ from modules import (
 
 
 class Model(nn.Module):
-    def __init__(self, arch, encoder_name, drop_path, size):
+    def __init__(self, arch, encoder_name, drop_path, size, pretrained=True):
         super(Model, self).__init__()
 
         self.encoder = TimmUniversalEncoder(
             encoder_name,
-            in_channels=1,
+            in_channels=3,
             drop_path_rate=drop_path,
             img_size=size,
-            pretrained=False
+            pretrained=pretrained,
         )
         with torch.no_grad():
-            dummy_inputs = torch.randn(2, 1, size, size)
+            dummy_inputs = torch.randn(2, 3, size, size)
             out = self.encoder(dummy_inputs)
             common_stride = size // out[1].shape[2]
             # if cfg.MODEL.BACKBONE.ENCODER.startswith('tf_efficientnet') or cfg.MODEL.BACKBONE.ENCODER.startswith('ecaresnet'):
@@ -58,7 +58,7 @@ class Model(nn.Module):
         elif arch == "Unet":
             self.decoder = UnetDecoder(
                 n_blocks=5,
-                decoder_channels=(256//2, 128//2, 64//2, 32//2, 16//2),
+                decoder_channels=(256, 128, 64, 32, 16),
                 encoder_channels=encoder_channels,
             )
 
@@ -109,4 +109,3 @@ class Model(nn.Module):
         decoder_output = self.decoder(*features)
         masks = self.segmentation_head(decoder_output)
         return torch.sigmoid(masks)
-

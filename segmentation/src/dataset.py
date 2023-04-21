@@ -21,79 +21,76 @@ class SegmentationDataset(Dataset):
 
         self.data_dir = data_dir
         self.mode = mode
-        self.df = df.reset_index(drop=True)
+        self.df = df[df['mode'] == mode].reset_index(drop=True)
         self.image_paths, self.labels = self.preprocess_df()
+        self.images = {}
+        self.masks = {}
 
-        if mode == 'train':
+        if mode == "train":
             self.transform = A.Compose(
-                [  
-                    A.RandomBrightnessContrast(p=0.5),
-                    A.OneOf([A.ShiftScaleRotate(), A.GridDistortion(), A.ElasticTransform()], p=0.5),
-                    A.OneOf([A.GaussNoise(), A.MultiplicativeNoise()], p=0.5),
-                    A.OneOf([A.Blur(blur_limit=3), A.MedianBlur(), A.MotionBlur()], p=0.5),
-                    A.Resize(width=int(size*1.1), height=int(size*1.1)),
+                [
+                    # A.LongestMaxSize(max_size=int(size * 1.1), interpolation=1),
+                    # A.PadIfNeeded(
+                    #     min_height=int(size * 1.1),
+                    #     min_width=int(size * 1.1),
+                    #     border_mode=0,
+                    #     value=(0, 0, 0),
+                    # ),
+                    A.Resize(height=int(size * 1.1), width=int(size * 1.1), interpolation=1),
+                    A.RandomBrightnessContrast(p=0.1),
+                    A.HorizontalFlip(p=0.1),
+                    A.VerticalFlip(p=0.1),
+                    A.OneOf(
+                        [A.ShiftScaleRotate(), A.GridDistortion(), A.ElasticTransform()], p=0.1
+                    ),
+                    A.OneOf([A.GaussNoise(), A.MultiplicativeNoise()], p=0.1),
+                    A.OneOf([A.Blur(blur_limit=3), A.MedianBlur(), A.MotionBlur()], p=0.1),
                     A.RandomCrop(width=int(size), height=int(size)),
-                    # A.HorizontalFlip(p=0.5),
-                    # A.VerticalFlip(p=0.5),
-                    # A.Rotate(p=0.8),
-                    # A.Resize(width=size, height=size),
-                    # A.Normalize(mean=[0.0], std=[1.0]),
                     ToTensorV2(),
-                ]
+                ],
             )
         else:
             self.transform = A.Compose(
                 [
-                    A.Resize(width=size, height=size), 
-                    # A.Normalize(mean=[0.0], std=[1.0]), 
-                    ToTensorV2()
-                ]
+                    # A.LongestMaxSize(max_size=size, interpolation=1),
+                    # A.PadIfNeeded(
+                    #     min_height=size,
+                    #     min_width=size,
+                    #     border_mode=0,
+                    #     value=(0, 0, 0),
+                    # ),
+                    A.Resize(height=size, width=size, interpolation=1),
+                    ToTensorV2(),
+                ],
             )
-        
+
     def __len__(self):
         return len(self.df)
 
     def preprocess_df(self):
-        if self.mode == 'train':
-            self.df = self.df[self.df.is_train]
+        return self.df["image"].to_list(), self.df["mask"].to_list()
+
+    def __getitem__(self, idx):
+        if self.image_paths[idx] in self.images:
+            img = self.images[self.image_paths[idx]]
         else:
-            self.df = self.df[~self.df.is_train]
-        return self.df['image'].to_list(), self.df['labels'].to_list()
+            img = cv2.imread(self.image_paths[idx])
+            self.images[self.image_paths[idx]] = img
 
-    def __getitem__(self, idx):
-        img = cv2.imread(os.path.join(self.data_dir, self.image_paths[idx]), cv2.IMREAD_GRAYSCALE)
-
-        label = cv2.imread(os.path.join(self.data_dir, self.labels[idx]), cv2.IMREAD_GRAYSCALE)
-        if 'syn/' in self.image_paths[idx]:
-            label = 255 - label
-        transformed = self.transform(image=img, mask=label)
-        return transformed['image'] / 255.0, transformed['mask']  / 255.0
-
-
-class SegmentationInferenceDataset(Dataset):
-    def __init__(self, df, data_dir, size, mode='val'):
-        super().__init__()
-        self.data_dir = data_dir
-        self.df = df.reset_index(drop=True)
-        self.image_paths = self.preprocess_df()
-        self.transform = A.Compose(
-            [
-                A.Resize(width=size, height=size), 
-                # A.Normalize(mean=[0.0], std=[1.0]), 
-                ToTensorV2()
-            ]
+        if self.labels[idx] in self.masks:
+            label = self.masks[self.labels[idx]]
+        else:
+            label = cv2.imread(self.labels[idx], cv2.IMREAD_GRAYSCALE)
+            if "syn" in self.image_paths[idx]:
+                label = 255 - label
+            self.masks[self.labels[idx]] = label
+        transformed = self.transform(
+            image=img, mask=label
         )
-        
-    def __len__(self):
-        return len(self.df)
-
-    def preprocess_df(self):
-        return self.df['image'].to_list()
-
-    def __getitem__(self, idx):
-        img = cv2.imread(os.path.join(self.data_dir, self.image_paths[idx]), cv2.IMREAD_GRAYSCALE)
-        transformed = self.transform(image=img)
-        return transformed['image'] / 255.0
+        return (
+            transformed["image"] / 255.0,
+            transformed["mask"] / 255.0,
+        )
 
 
 

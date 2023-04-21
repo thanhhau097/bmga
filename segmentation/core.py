@@ -13,7 +13,7 @@ class InferenceDataset(torch.utils.data.Dataset):
         self.image_paths = image_paths
         self.transform = A.Compose(
             [
-                A.Resize(width=size, height=size), 
+                A.Resize(width=size, height=size, interpolation=1), 
                 ToTensorV2()
             ]
         )
@@ -21,7 +21,7 @@ class InferenceDataset(torch.utils.data.Dataset):
         return len(self.image_paths)
 
     def __getitem__(self, idx):
-        img = cv2.imread(self.image_paths[idx], cv2.IMREAD_GRAYSCALE)
+        img = cv2.imread(self.image_paths[idx])
         transformed = self.transform(image=img)
         return transformed['image'] / 255.0
 
@@ -33,7 +33,7 @@ def collate_fn(batch):
 
 class SegmentationModel:
     def __init__(self, arch, encoder_name, drop_path, size, weights_path):
-        self.model = Model(arch, encoder_name, drop_path, size)
+        self.model = Model(arch, encoder_name, drop_path, size, pretrained=False)
         self.model.load_state_dict(torch.load(weights_path))
         self.model.eval()
 
