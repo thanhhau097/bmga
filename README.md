@@ -7,7 +7,7 @@
 - [x] Improve db detection model and hyperparameters tuning: db_x_labels_new
 
 - [ ] Line segmentation model
-- [ ] Improve keypoint detection model: may be we should use separate model for each type of graph: line/scatter/bar
+- [x] Improve keypoint detection model: may be we should use separate model for each type of graph: line/scatter/bar
 - [ ] Convert horizontal bar data to vertical bar data to train vertical bar only
 - [ ] Improve scatter model
 
@@ -18,7 +18,7 @@
 
 - [ ] With external data, we can:
     - [ ] Error in ChartInfo data: with the y labels that contain %, the value boxes are wrong
-    - [x] Use original data + all chartinfo data to train x/y labels DB model and x/y points detection model
+    - [x] ssUse original data + all chartinfo data to train x/y labels DB model and x/y points detection model
     - [x] Use original data + filtered chartinfo data to train value boxes detection model
 
 - [ ] Model Ensemble
