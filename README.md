@@ -11,8 +11,8 @@
 - [ ] Convert horizontal bar data to vertical bar data to train vertical bar only
 - [ ] Improve scatter model
 
-- [ ] Hanle multiple words in one label box using DB model
-- [ ] Rotate horizontal (maybe all?) labels before OCR (if necessary)
+- [x] Hanle multiple words in one label box using DB model
+- [x] Rotate horizontal (maybe all?) labels before OCR (if necessary)
 
 - [ ] Vertical bar: histogram charts are all wrong on y, missing x labels
 
