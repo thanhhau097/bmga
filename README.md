@@ -6,10 +6,10 @@
 - [x] Post process for line data generation, only keep points that are corresponding to the x labels
 - [x] Improve db detection model and hyperparameters tuning: db_x_labels_new
 
-- [ ] Line segmentation model
 - [x] Improve keypoint detection model: may be we should use separate model for each type of graph: line/scatter/bar
-- [ ] Convert horizontal bar data to vertical bar data to train vertical bar only
+- [ ] Line segmentation model
 - [ ] Improve scatter model
+- [ ] x/y keypoint detection model
 
 - [x] Hanle multiple words in one label box using DB model
 - [x] Rotate horizontal (maybe all?) labels before OCR (if necessary)
@@ -21,6 +21,7 @@
     - [x] ssUse original data + all chartinfo data to train x/y labels DB model and x/y points detection model
     - [x] Use original data + filtered chartinfo data to train value boxes detection model
 
+- [ ] Convert horizontal bar data to vertical bar data to train vertical bar only
 - [ ] Model Ensemble
     - [ ] Classification: graph, x_type
     - [ ] Object detection: keypoint
