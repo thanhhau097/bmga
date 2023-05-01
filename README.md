@@ -7,19 +7,24 @@
 - [x] Improve db detection model and hyperparameters tuning: db_x_labels_new
 
 - [x] Improve keypoint detection model: may be we should use separate model for each type of graph: line/scatter/bar
-- [ ] Line segmentation model
-- [ ] Improve scatter model
-- [ ] x/y keypoint detection model
-
 - [x] Hanle multiple words in one label box using DB model
 - [x] Rotate horizontal (maybe all?) labels before OCR (if necessary)
-
-- [ ] Vertical bar: histogram charts are all wrong on y, missing x labels
 
 - [ ] With external data, we can:
     - [ ] Error in ChartInfo data: with the y labels that contain %, the value boxes are wrong
     - [x] ssUse original data + all chartinfo data to train x/y labels DB model and x/y points detection model
     - [x] Use original data + filtered chartinfo data to train value boxes detection model
+
+- [ ] Line segmentation model: 
+    - [ ] pseudo labels
+    - [ ] full data
+- [ ] Improve scatter model: 
+    - [ ] external data -> full data
+- [ ] x/y keypoint detection model
+    - [ ] keypoint models: mmpose
+    - [ ] full data
+
+- [ ] Vertical bar: histogram charts are all wrong on y, missing x labels
 
 - [ ] Convert horizontal bar data to vertical bar data to train vertical bar only
 - [ ] Model Ensemble
