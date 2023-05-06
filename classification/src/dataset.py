@@ -7,7 +7,7 @@ from torch.utils.data import Dataset
 
 
 class BMGADataset(Dataset):
-    def __init__(self, jsonl_path, image_dir, classes, classification_type, size=(640, 320), transform=None):
+    def __init__(self, jsonl_path, image_dir, classes, classification_type, size=(640, 640), transform=None):
         self.df = pd.read_json(jsonl_path, lines=True)
         self.image_dir = image_dir
         self.transform = transform
@@ -24,14 +24,15 @@ class BMGADataset(Dataset):
         image = cv2.imread(image_path)
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
         image = cv2.resize(image, self.size)
+
+        if self.transform is not None:
+            image = self.transform(image=image)["image"]
+
         # channel first
         image = image.transpose(2, 0, 1)
         image = image.astype("float32")
         image /= 255.0
 
-        if self.transform is not None:
-            image = self.transform(image=image)["image"]
-        
         if self.classification_type == "graph":
             label = self.classes.index(row["ground_truth"]["gt_parse"]["class"])
         elif self.classification_type == "x_type":

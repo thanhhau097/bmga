@@ -86,11 +86,23 @@ def main():
             classes=classes,
         )
     else:
+        # create train augmentation transfroms
+        import albumentations as A
+
+        train_transforms = A.Compose(
+            [
+                A.RandomBrightnessContrast(p=0.5),
+                A.HueSaturationValue(p=0.5),
+                A.ShiftScaleRotate(p=0.5),
+            ]
+        )
+
         train_dataset = BMGADataset(
             jsonl_path=data_args.train_jsonl_path,
             image_dir=data_args.train_image_folder,
             classes=classes,
-            classification_type=data_args.classification_type
+            classification_type=data_args.classification_type,
+            transform=train_transforms,
         )
 
         val_dataset = BMGADataset(

@@ -47,12 +47,12 @@ class Model(nn.Module):
             )
         elif arch == "UnetPlusPlus":
             self.decoder = UnetPlusPlusDecoder(
-                decoder_channels=(256//8, 128//8, 64//8, 32//8, 16//8),
+                # decoder_channels=(256//8, 128//8, 64//8, 32//8, 16//8),
                 encoder_channels=encoder_channels,
             )
         elif arch == "UnetPlusPlusFix":
             self.decoder = UnetPlusPlusDecoderFix(
-                decoder_channels=(256//8, 128//8, 64//8, 32//8),
+                # decoder_channels=(256//8, 128//8, 64//8, 32//8),
                 encoder_channels=encoder_channels,
             )
         elif arch == "Unet":
