@@ -22,3 +22,11 @@ class DataArguments:
     classification_type: str = field(
         default="graph", metadata={"help": "classification type"}
     )
+    histogram_train_csv_path: str = field(
+        default="./data/histogram_classification/train.csv",
+        metadata={"help": "path to histogram train csv file"},
+    )
+    histogram_val_csv_path: str = field(
+        default="./data/histogram_classification/val.csv",
+        metadata={"help": "path to histogram val csv file"},
+    )

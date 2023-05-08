@@ -6,9 +6,9 @@ define:
   - name: train_data
     class: ImageDataset
     data_dir:
-        - '../../data/external_data/all/'
+        - '../../data/external_data/db/'
     data_list:
-        - '../../data/external_data/all/train_list.txt'
+        - '../../data/external_data/db/train_list.txt'
     processes:
         - class: AugmentDetectionData
           augmenter_args:
@@ -30,9 +30,9 @@ define:
   - name: validate_data
     class: ImageDataset
     data_dir:
-        - '../../data/external_data/all/'
+        - '../../data/external_data/db/'
     data_list:
-        - '../../data/external_data/all/val_list.txt'
+        - '../../data/external_data/db/val_list.txt'
     processes:
         - class: AugmentDetectionData
           augmenter_args:

@@ -6,11 +6,12 @@ import numpy as np
 import pandas as pd
 import torch
 import transformers
+from joblib import Parallel, delayed
 from transformers import HfArgumentParser, TrainingArguments, set_seed
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
 
 from data_args import DataArguments
-from dataset import BMGADataset, HistogramClassificationDataset, collate_fn
+from dataset import SegmentationDataset, collate_fn
 from engine import CustomTrainer, compute_metrics
 from model import Model
 from model_args import ModelArguments
@@ -61,64 +62,32 @@ def main():
 
     # Set seed before initializing model.
     set_seed(training_args.seed)
-  
-    # Load dataset
-    print("Loading dataset...")
-    if data_args.classification_type == "graph":
-        classes = ['dot', 'line', 'scatter', 'vertical_bar', "horizontal_bar"]
-    elif data_args.classification_type in ["x_type", "y_type"]:
-        classes = ["numerical", "categorical"]
-    elif data_args.classification_type == "histogram":
-        classes = ["histogram", "non_histogram"]
 
-    if data_args.classification_type == "histogram":
-        train_df = pd.read_csv(data_args.histogram_train_csv_path)
-        train_dataset = HistogramClassificationDataset(
-            df=train_df,
-            image_dir=data_args.train_image_folder,
-            classes=classes,
-        )
+    # Load data
+    print(f"Reading data at {data_args.train_csv}")
+    df = pd.read_csv(data_args.train_csv)
 
-        val_df = pd.read_csv(data_args.histogram_val_csv_path)
-        val_dataset = HistogramClassificationDataset(
-            df=val_df,
-            image_dir=data_args.val_image_folder,
-            classes=classes,
-        )
-    else:
-        # create train augmentation transfroms
-        import albumentations as A
+    train_dataset = SegmentationDataset(
+        df=df,
+        data_dir=data_args.data_dir,
+        size=data_args.size
+    )
 
-        train_transforms = A.Compose(
-            [
-                A.RandomBrightnessContrast(p=0.5),
-                A.HueSaturationValue(p=0.5),
-                A.ShiftScaleRotate(p=0.5),
-            ]
-        )
-
-        train_dataset = BMGADataset(
-            jsonl_path=data_args.train_jsonl_path,
-            image_dir=data_args.train_image_folder,
-            classes=classes,
-            classification_type=data_args.classification_type,
-            transform=train_transforms,
-        )
-
-        val_dataset = BMGADataset(
-            jsonl_path=data_args.val_jsonl_path,
-            image_dir=data_args.val_image_folder,
-            classes=classes,
-            classification_type=data_args.classification_type
-        )
+    val_dataset = SegmentationDataset(
+        df=df,
+        data_dir=data_args.data_dir,
+        size=data_args.size,
+        mode='val'
+    )
 
     # Initialize trainer
     print("Initializing model...")
     model = Model(
-        model_name=model_args.model_name,
-        n_classes=len(classes),
+        arch=model_args.arch,
+        encoder_name=model_args.encoder_name,
+        drop_path=model_args.drop_path,
+        size=data_args.size
     )
-
     if last_checkpoint is None and model_args.resume is not None:
         logger.info(f"Loading {model_args.resume} ...")
         checkpoint = torch.load(model_args.resume, "cpu")
@@ -155,12 +124,13 @@ def main():
         trainer.save_metrics("train", metrics)
         trainer.save_state()
 
-    # Evaluation
     if training_args.do_eval:
         logger.info("*** Evaluate ***")
-        metrics = trainer.evaluate()
+        output = trainer.predict(val_dataset, metric_key_prefix="eval")
+        metrics = output.metrics
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
+        compute_metrics(output)
 
 if __name__ == "__main__":
     main()

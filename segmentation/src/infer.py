@@ -5,12 +5,15 @@ import sys
 import numpy as np
 import pandas as pd
 import torch
+from torch.utils.data import DataLoader
 import transformers
+from joblib import Parallel, delayed
 from transformers import HfArgumentParser, TrainingArguments, set_seed
 from transformers.trainer_utils import get_last_checkpoint, is_main_process
+from tqdm import tqdm
 
 from data_args import DataArguments
-from dataset import BMGADataset, HistogramClassificationDataset, collate_fn
+from dataset import SegmentationInferenceDataset, SegmentationDataset, collate_fn
 from engine import CustomTrainer, compute_metrics
 from model import Model
 from model_args import ModelArguments
@@ -61,64 +64,34 @@ def main():
 
     # Set seed before initializing model.
     set_seed(training_args.seed)
-  
-    # Load dataset
-    print("Loading dataset...")
-    if data_args.classification_type == "graph":
-        classes = ['dot', 'line', 'scatter', 'vertical_bar', "horizontal_bar"]
-    elif data_args.classification_type in ["x_type", "y_type"]:
-        classes = ["numerical", "categorical"]
-    elif data_args.classification_type == "histogram":
-        classes = ["histogram", "non_histogram"]
 
-    if data_args.classification_type == "histogram":
-        train_df = pd.read_csv(data_args.histogram_train_csv_path)
-        train_dataset = HistogramClassificationDataset(
-            df=train_df,
-            image_dir=data_args.train_image_folder,
-            classes=classes,
-        )
+    # Load data
+    print(f"Reading data at {data_args.train_csv}")
+    val_df = pd.read_csv(data_args.train_csv)
 
-        val_df = pd.read_csv(data_args.histogram_val_csv_path)
-        val_dataset = HistogramClassificationDataset(
-            df=val_df,
-            image_dir=data_args.val_image_folder,
-            classes=classes,
-        )
-    else:
-        # create train augmentation transfroms
-        import albumentations as A
+    val_dataset = SegmentationDataset(
+        df=val_df,
+        data_dir=data_args.data_dir,
+        size=data_args.size,
+        mode='val'
+    )
 
-        train_transforms = A.Compose(
-            [
-                A.RandomBrightnessContrast(p=0.5),
-                A.HueSaturationValue(p=0.5),
-                A.ShiftScaleRotate(p=0.5),
-            ]
-        )
-
-        train_dataset = BMGADataset(
-            jsonl_path=data_args.train_jsonl_path,
-            image_dir=data_args.train_image_folder,
-            classes=classes,
-            classification_type=data_args.classification_type,
-            transform=train_transforms,
-        )
-
-        val_dataset = BMGADataset(
-            jsonl_path=data_args.val_jsonl_path,
-            image_dir=data_args.val_image_folder,
-            classes=classes,
-            classification_type=data_args.classification_type
-        )
+    val_loader = DataLoader(
+        val_dataset, 
+        batch_size=1, 
+        shuffle=False, 
+        num_workers=training_args.dataloader_num_workers, 
+        pin_memory=True
+    )
 
     # Initialize trainer
     print("Initializing model...")
     model = Model(
-        model_name=model_args.model_name,
-        n_classes=len(classes),
+        arch=model_args.arch,
+        encoder_name=model_args.encoder_name,
+        drop_path=model_args.drop_path,
+        size=data_args.size
     )
-
     if last_checkpoint is None and model_args.resume is not None:
         logger.info(f"Loading {model_args.resume} ...")
         checkpoint = torch.load(model_args.resume, "cpu")
@@ -134,33 +107,30 @@ def main():
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     model = model.to(device)
+    
+    print("Start inference...")
+    model.eval()
 
-    print("Start training...")
-    trainer = CustomTrainer(
-        model=model,
-        args=training_args,
-        train_dataset=train_dataset,
-        eval_dataset=val_dataset,
-        data_collator=collate_fn,
-        compute_metrics=compute_metrics,
-    )
+    masks = []
+    imgs = []
+    gts = []
+    with torch.no_grad():
+        tk = tqdm(val_loader, total=len(val_loader))
+        for step, batch in enumerate(tk):
+            img, gt = [x.to(device) for x in batch]
+            mask = model(img)
+            masks.extend(mask)
+            imgs.extend(img)
+            gts.extend(gt)
+    masks = torch.stack(masks)
+    imgs = torch.stack(imgs)
+    gts = torch.stack(gts)
+    print(f"Saving outputs")
+    torch.save(masks, "masks_out_stage1.pth")
+    torch.save(imgs, "imgs_out_stage1.pth")
+    torch.save(gts, "gts_out_stage1.pth")
+    print("Saved!")
 
-    # Training
-    if training_args.do_train:
-        checkpoint = last_checkpoint if last_checkpoint else None
-        train_result = trainer.train(resume_from_checkpoint=checkpoint)
-        metrics = train_result.metrics
-        trainer.save_model()
-        trainer.log_metrics("train", metrics)
-        trainer.save_metrics("train", metrics)
-        trainer.save_state()
-
-    # Evaluation
-    if training_args.do_eval:
-        logger.info("*** Evaluate ***")
-        metrics = trainer.evaluate()
-        trainer.log_metrics("eval", metrics)
-        trainer.save_metrics("eval", metrics)
 
 if __name__ == "__main__":
     main()

@@ -19,27 +19,28 @@ class Exp(MyExp):
         # self.width = 0.50
 
         # yolox-m
-        self.depth = 0.67
-        self.width = 0.75
+        # self.depth = 0.67
+        # self.width = 0.75
 
         # yolox-l
         # self.depth = 1.0
         # self.width = 1.0
 
         # yolox-x
-        # self.depth = 1.33
-        # self.width = 1.25
+        self.depth = 1.33
+        self.width = 1.25
 
         self.exp_name = os.path.split(os.path.realpath(__file__))[1].split(".")[0]
 
         # Define yourself dataset path
-        # self.data_dir = "/home/thanh/bmga/data"
-        self.data_dir = "/home/thanh/bmga/data/external_data/all"
+        self.data_dir = "/home/thanh/bmga/data"
+        # self.data_dir = "/home/thanh/bmga/data/external_data/all"
         self.train_ann = "train_coco_annotations.json"
         self.val_ann = "val_coco_annotations.json"
 
         self.num_classes = 3
         self.input_size = (640, 640)
+        self.random_size = (10, 26)
 
         self.max_epoch = 300
         self.no_aug_epochs = 300
