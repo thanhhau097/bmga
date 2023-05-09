@@ -115,4 +115,5 @@ def compute_metrics(eval_preds, val_df: pd.DataFrame, processor: Pix2StructProce
             predictions[predictions["chart_type"] == chart_type],
         )
     score_by_chart["overall"] = benetech_score(ground_truth, predictions)
+    print(score_by_chart)
     return score_by_chart

@@ -67,10 +67,12 @@ def main():
     set_seed(training_args.seed)
     train_df = read_annotation("../data/train_list.txt")
     val_df = read_annotation("../data/val_list.txt")
-    val_df = val_df.groupby(["chart_type"]).apply(lambda x: x.head(10)).reset_index(drop=True)
+    mini_val_df = val_df.groupby(["chart_type"]).apply(lambda x: x.head(10)).reset_index(drop=True)
+    # print(val_df[val_df["chart_type"] == "horizontal_bar"].head())
     processor = create_processor(model_args.model_name)
     train_dataset = ImageCaptioningDataset(train_df, processor, data_args.max_patches)
     val_dataset = ImageCaptioningDataset(val_df, processor, data_args.max_patches)
+    mini_val_dataset = ImageCaptioningDataset(mini_val_df, processor, data_args.max_patches)
 
     # Initialize trainer
     logger.info("Initializing model...")
@@ -85,8 +87,6 @@ def main():
         if "state_dict" in checkpoint:
             checkpoint = checkpoint.pop("state_dict")
         model.load_state_dict(checkpoint)
-
-    logger.info("Start training...")
 
     training_args.remove_unused_columns = False
     training_args.load_best_model_at_end = True
@@ -105,13 +105,14 @@ def main():
         model=model,
         args=training_args,
         train_dataset=train_dataset,
-        eval_dataset=val_dataset,
+        eval_dataset=mini_val_dataset,
         data_collator=partial(collate_fn, processor=processor),
         compute_metrics=partial(compute_metrics, val_df=val_df, processor=processor),
     )
 
     # Training
     if training_args.do_train:
+        logger.info("Start training ...")
         checkpoint = last_checkpoint if last_checkpoint else None
         train_result = trainer.train(resume_from_checkpoint=checkpoint)
         metrics = train_result.metrics
@@ -121,10 +122,11 @@ def main():
         trainer.save_state()
 
     # Evaluation
-    logger.info("*** Evaluate ***")
-    metrics = trainer.evaluate()
-    trainer.log_metrics("eval", metrics)
-    trainer.save_metrics("eval", metrics)
+    if training_args.do_eval:
+        trainer.eval_dataset = val_dataset
+        metrics = trainer.evaluate()
+        trainer.log_metrics("eval", metrics)
+        trainer.save_metrics("eval", metrics)
 
 
 if __name__ == "__main__":
