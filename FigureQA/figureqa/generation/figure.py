@@ -71,6 +71,9 @@ class HBarGraphCategorical(object):
         p.yaxis.axis_label = y_axis_label
         p.title.name = TITLE_ID
         p.title.text_font_size = "8pt"
+        p.title.align = "center"
+        p.xaxis.axis_label_text_font_size = "8pt"
+        p.yaxis.axis_label_text_font_size = "8pt"
 
         if visuals["draw_gridlines"]:
             if p.grid[0].dimension == 0:
