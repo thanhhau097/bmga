@@ -41,22 +41,30 @@ class CustomTrainer(Trainer):
         optimizer_grouped_parameters = [
             {
                 "params": [
-                    p for n, p in model.named_parameters() if not any(nd in n for nd in no_decay)
+                    p
+                    for n, p in model.named_parameters()
+                    if not any(nd in n for nd in no_decay)
                 ],
                 "weight_decay": self.args.weight_decay,
             },
             {
                 "params": [
-                    p for n, p in model.named_parameters() if any(nd in n for nd in no_decay)
+                    p
+                    for n, p in model.named_parameters()
+                    if any(nd in n for nd in no_decay)
                 ],
                 "weight_decay": 0.0,
             },
         ]
-        optimizer_cls, optimizer_kwargs = Trainer.get_optimizer_cls_and_kwargs(self.args)
+        optimizer_cls, optimizer_kwargs = Trainer.get_optimizer_cls_and_kwargs(
+            self.args
+        )
         self.optimizer = optimizer_cls(optimizer_grouped_parameters, **optimizer_kwargs)
         return self.optimizer
 
-    def prediction_step(self, model, inputs, prediction_loss_only=False, ignore_keys=None):
+    def prediction_step(
+        self, model, inputs, prediction_loss_only=False, ignore_keys=None
+    ):
         inputs = self._prepare_inputs(inputs)
         with torch.no_grad():
             # with self.compute_loss_context_manager():
@@ -84,7 +92,9 @@ def compute_metrics(eval_preds, val_df: pd.DataFrame, processor: Pix2StructProce
         preds = display_deplot_output(
             processor.decode(preds[preds != -100], skip_special_tokens=True)
         )
-        labels = display_deplot_output(processor.decode(labels, skip_special_tokens=True))
+        labels = display_deplot_output(
+            processor.decode(labels, skip_special_tokens=True)
+        )
         predictions.append(
             pd.DataFrame.from_dict(
                 {
@@ -108,6 +118,7 @@ def compute_metrics(eval_preds, val_df: pd.DataFrame, processor: Pix2StructProce
 
     predictions = pd.concat(predictions)
     ground_truth = pd.concat(ground_truth)
+    print(predictions.shape)
     score_by_chart = {}
     for chart_type in val_df["chart_type"].unique():
         score_by_chart[chart_type] = benetech_score(

@@ -2,13 +2,18 @@ import logging
 import os
 import sys
 from functools import partial
-
+from glob import glob
 import numpy as np
 import pandas as pd
 import torch
 import transformers
 from data_args import DataArguments
-from dataset import ImageCaptioningDataset, collate_fn, create_processor, read_annotation
+from dataset import (
+    ImageCaptioningDataset,
+    collate_fn,
+    create_processor,
+    read_annotation,
+)
 from engine import CustomTrainer, compute_metrics
 from model_args import ModelArguments
 from transformers import (
@@ -56,7 +61,9 @@ def main():
         datefmt="%m/%d/%Y %H:%M:%S",
         handlers=[logging.StreamHandler(sys.stdout)],
     )
-    logger.setLevel(logging.INFO if is_main_process(training_args.local_rank) else logging.WARN)
+    logger.setLevel(
+        logging.INFO if is_main_process(training_args.local_rank) else logging.WARN
+    )
     # Set the verbosity to info of the Transformers logger (on main process only):
     if is_main_process(training_args.local_rank):
         # transformers.utils.logging.set_verbosity_info()
@@ -65,14 +72,37 @@ def main():
 
     # Set seed before initializing model.
     set_seed(training_args.seed)
-    train_df = read_annotation("../data/train_list.txt")
-    val_df = read_annotation("../data/val_list.txt")
-    mini_val_df = val_df.groupby(["chart_type"]).apply(lambda x: x.head(10)).reset_index(drop=True)
-    # print(val_df[val_df["chart_type"] == "horizontal_bar"].head())
+    train_df = read_annotation("../data/benetech/train_list.txt")
+
+    for folder in ["plotqa-val", "plotqa-test"]:
+        images = glob(f"../FigureQA/{folder}/png/*.png")
+        texts = [
+            i.replace("/png/", "/json_annotations/").replace(
+                ".png", "_annotations.json"
+            )
+            for i in images
+        ]
+        synth_df = pd.DataFrame({"image": images, "text": texts})
+        synth_df["chart_type"] = "horizontal_bar"
+        train_df = pd.concat([train_df, synth_df]).reset_index(drop=True)
+    print(train_df["chart_type"].value_counts())
+
+    val_df = read_annotation("../data/benetech/val_list.txt")
+    mini_val_df = (
+        val_df.groupby(["chart_type"])
+        .apply(lambda x: x.head(10))
+        .reset_index(drop=True)
+    )
     processor = create_processor(model_args.model_name)
-    train_dataset = ImageCaptioningDataset(train_df, processor, data_args.max_patches)
+    train_dataset = ImageCaptioningDataset(
+        train_df, processor, data_args.max_patches, True
+    )
+    # for i in np.random.randint(0, len(train_dataset), 5):
+    #     train_dataset[i].save(f"augmented{i}.png")
     val_dataset = ImageCaptioningDataset(val_df, processor, data_args.max_patches)
-    mini_val_dataset = ImageCaptioningDataset(mini_val_df, processor, data_args.max_patches)
+    mini_val_dataset = ImageCaptioningDataset(
+        mini_val_df, processor, data_args.max_patches
+    )
 
     # Initialize trainer
     logger.info("Initializing model...")
@@ -95,7 +125,7 @@ def main():
     training_args.save_total_limit = 3
     training_args.logging_strategy = "steps"
     training_args.lr_scheduler_type = "cosine"
-    # training_args.optim = "adafactor"
+    training_args.optim = "adafactor"
     # training_args.adam_epsilon = 1e-6
     training_args.greater_is_better = True
     training_args.warmup_ratio = 0.1

@@ -7,6 +7,7 @@ import torch
 from PIL import Image
 from torch.utils.data import DataLoader, Dataset
 from transformers import Pix2StructForConditionalGeneration, Pix2StructProcessor
+from data.augment import rand_augment_transform
 
 NEW_LINE = "<0x0A>"
 SEP_CELL = " | "
@@ -15,7 +16,7 @@ CHART_TYPES = ["<line>", "<vertical_bar>", "<scatter>", "<dot>", "<horizontal_ba
 
 
 def create_processor(processor_name):
-    processor = Pix2StructProcessor.from_pretrained(processor_name)
+    processor = Pix2StructProcessor.from_pretrained(processor_name, is_vqa=False)
     # extra_tokens = [BOS_TOKEN] + CHART_TYPES
     # processor.tokenizer.add_tokens(extra_tokens)
     return processor
@@ -44,7 +45,13 @@ def display_deplot_output(deplot_output):
 
 
 class ImageCaptioningDataset(Dataset):
-    def __init__(self, df: pd.DataFrame, processor: Pix2StructProcessor, max_patches: int = 2048):
+    def __init__(
+        self,
+        df: pd.DataFrame,
+        processor: Pix2StructProcessor,
+        max_patches: int = 2048,
+        augment: bool = False,
+    ):
         super().__init__()
         self.processor = processor
         self.df = df
@@ -59,17 +66,26 @@ class ImageCaptioningDataset(Dataset):
 
         encoding = self.processor(
             images=image,
-            text="Generate underlying data table of the figure below:",
             return_tensors="pt",
             add_special_tokens=True,
             max_patches=self.max_patches,
         )
         text = json.load(open(info["text"]))
 
+        if "general_figure_info" in text:
+            title = text["general_figure_info"]["title"]["text"]
+            y_label = text["general_figure_info"]["y_axis"]["label"]["text"]
+            x_label = text["general_figure_info"]["x_axis"]["label"]["text"]
+            text["data-series"] = [
+                {"x": x, "y": y}
+                for x, y in zip(text["models"][0]["x"], text["models"][0]["y"])
+            ]
+        else:
+            title = text["text"][0]["text"]
+            y_label = text["text"][1]["text"]
+            x_label = text["text"][2]["text"]
+
         # processed text
-        title = text["text"][0]["text"]
-        y_label = text["text"][1]["text"]
-        x_label = text["text"][2]["text"]
         # chart_type = "<" + text["chart-type"] + ">"
         # processed = BOS_TOKEN + chart_type + " "
         processed = "TITLE" + SEP_CELL + title + NEW_LINE
@@ -121,14 +137,19 @@ if __name__ == "__main__":
 
     processor = create_processor("google/deplot")
     train_df = pd.read_csv("../data/train_list.txt", header=None)
-    train_df["image"] = train_df[0].apply(lambda x: "../data/benetech/train/images/" + x)
+    train_df["image"] = train_df[0].apply(
+        lambda x: "../data/benetech/train/images/" + x
+    )
     train_df["text"] = train_df[0].apply(
         lambda x: "../data/benetech/train/annotations/" + x.split(".")[0] + ".json"
     )
     dataset = ImageCaptioningDataset(train_df, processor)
 
     dataloader = DataLoader(
-        dataset, batch_size=2, collate_fn=partial(collate_fn, processor=processor), num_workers=4
+        dataset,
+        batch_size=2,
+        collate_fn=partial(collate_fn, processor=processor),
+        num_workers=4,
     )
     batch = next(iter(dataloader))
 
