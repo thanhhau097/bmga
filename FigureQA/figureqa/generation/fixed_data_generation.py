@@ -379,7 +379,7 @@ def _generate_bar_categorical(key, data=None):
     #     assigned_colors.append(selected_color_pairs[label_index][1])
     for i, label in enumerate(data["data"][0]["x"]):
         assigned_labels.append(label)
-        assigned_colors.append(selected_color_pairs[i][1])
+        assigned_colors.append(selected_color_pairs[0][1])
 
     # Re-map the labels
     new_point_set = {
@@ -713,6 +713,7 @@ def generate_source_data(
                         "image_index": d["image_index"],
                     }
                 )
+                # break
 
         generated_data = Parallel(n_jobs=os.cpu_count())(
             delayed(globals()["generate_" + config_key])(i)
