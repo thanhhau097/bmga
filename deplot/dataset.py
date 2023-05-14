@@ -72,20 +72,10 @@ class ImageCaptioningDataset(Dataset):
         )
         text = json.load(open(info["text"]))
 
-        if "general_figure_info" in text:
-            title = text["general_figure_info"]["title"]["text"]
-            y_label = text["general_figure_info"]["y_axis"]["label"]["text"]
-            x_label = text["general_figure_info"]["x_axis"]["label"]["text"]
-            text["data-series"] = [
-                {"x": x, "y": y}
-                for x, y in zip(text["models"][0]["x"], text["models"][0]["y"])
-            ]
-        else:
-            title = text["text"][0]["text"]
-            y_label = text["text"][1]["text"]
-            x_label = text["text"][2]["text"]
-
         # processed text
+        title = "chart_title"
+        y_label = "y_axis"
+        x_label = "x_axis"
         # chart_type = "<" + text["chart-type"] + ">"
         # processed = BOS_TOKEN + chart_type + " "
         processed = "TITLE" + SEP_CELL + title + NEW_LINE
