@@ -80,7 +80,7 @@ class CustomTrainer(Trainer):
         return torch.FloatTensor([0.0]), outputs, inputs["labels"]
 
 
-def compute_metrics(eval_preds, val_df: pd.DataFrame, processor: Pix2StructProcessor):
+def compute_metrics(eval_preds, val_df: pd.DataFrame, processor: Pix2StructProcessor, output_dir: str):
     # assume chart_type is all correct
     chart_types = val_df["chart_type"].values
     ground_truth = []
@@ -118,7 +118,6 @@ def compute_metrics(eval_preds, val_df: pd.DataFrame, processor: Pix2StructProce
 
     predictions = pd.concat(predictions)
     ground_truth = pd.concat(ground_truth)
-    print(predictions.shape)
     score_by_chart = {}
     for chart_type in val_df["chart_type"].unique():
         score_by_chart[chart_type] = benetech_score(
@@ -127,4 +126,6 @@ def compute_metrics(eval_preds, val_df: pd.DataFrame, processor: Pix2StructProce
         )
     score_by_chart["overall"] = benetech_score(ground_truth, predictions)
     print(score_by_chart)
+    predictions.to_csv(f"{output_dir}/predictions.csv", index=False)
+    ground_truth.to_csv(f"{output_dir}/ground_truth.csv", index=False)
     return score_by_chart

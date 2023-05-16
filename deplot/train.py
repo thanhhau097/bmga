@@ -74,18 +74,22 @@ def main():
     set_seed(training_args.seed)
     train_df = read_annotation("../data/benetech/train_list.txt")
 
-    for folder in ["plotqa-val", "plotqa-test"]:
-        images = glob(f"../FigureQA/{folder}/png/*.png")
-        texts = [
-            i.replace("/png/", "/json_annotations/").replace(
+    plotqa_type = {"vbar": "vertical_bar", "hbar": "horizontal_bar", "line": "line"}
+    for folder in ["validation", "test"]:
+        images = []
+        texts = []
+        for img_path in glob(f"../data/plotqa/{folder}/png/*.png"):
+            text_path = img_path.replace("/png/", "/json_annotations/").replace(
                 ".png", "_annotations.json"
             )
-            for i in images
-        ]
+            if os.path.exists(text_path):
+                images.append(img_path)
+                texts.append(text_path)
         synth_df = pd.DataFrame({"image": images, "text": texts})
-        synth_df["chart_type"] = "horizontal_bar"
+        synth_df["chart_type"] = synth_df["image"].apply(
+            lambda x: plotqa_type.get(x.split("_")[1].replace(".png", ""))
+        )
         train_df = pd.concat([train_df, synth_df]).reset_index(drop=True)
-    print(train_df["chart_type"].value_counts())
 
     val_df = read_annotation("../data/benetech/val_list.txt")
     mini_val_df = (
@@ -93,6 +97,10 @@ def main():
         .apply(lambda x: x.head(10))
         .reset_index(drop=True)
     )
+
+    print(train_df["chart_type"].value_counts())
+    print(val_df["chart_type"].value_counts())
+
     processor = create_processor(model_args.model_name)
     train_dataset = ImageCaptioningDataset(
         train_df, processor, data_args.max_patches, True
@@ -122,11 +130,14 @@ def main():
     training_args.load_best_model_at_end = True
     training_args.evaluation_strategy = "epoch"
     training_args.save_strategy = "epoch"
+    # training_args.evaluation_strategy = "steps"
+    # training_args.save_strategy = "steps"
+    # training_args.eval_steps = 10000
+    # training_args.save_steps = 10000
     training_args.save_total_limit = 3
     training_args.logging_strategy = "steps"
     training_args.lr_scheduler_type = "cosine"
     training_args.optim = "adafactor"
-    # training_args.adam_epsilon = 1e-6
     training_args.greater_is_better = True
     training_args.warmup_ratio = 0.1
     training_args.metric_for_best_model = "eval_overall"
@@ -137,7 +148,7 @@ def main():
         train_dataset=train_dataset,
         eval_dataset=mini_val_dataset,
         data_collator=partial(collate_fn, processor=processor),
-        compute_metrics=partial(compute_metrics, val_df=val_df, processor=processor),
+        compute_metrics=partial(compute_metrics, val_df=val_df, processor=processor, output_dir=training_args.output_dir),
     )
 
     # Training
@@ -153,7 +164,7 @@ def main():
 
     # Evaluation
     if training_args.do_eval:
-        trainer.eval_dataset = val_dataset
+        # trainer.eval_dataset = val_dataset
         metrics = trainer.evaluate()
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
