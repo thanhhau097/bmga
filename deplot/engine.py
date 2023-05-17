@@ -8,9 +8,7 @@ import torch
 import torch.nn.functional as F
 from dataset import display_deplot_output
 from metrics import benetech_score
-from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from torch import Tensor, nn
-from torchvision.ops import sigmoid_focal_loss
 from transformers import Pix2StructProcessor, Trainer
 from transformers.trainer_pt_utils import nested_detach
 
@@ -66,6 +64,9 @@ class CustomTrainer(Trainer):
         self, model, inputs, prediction_loss_only=False, ignore_keys=None
     ):
         inputs = self._prepare_inputs(inputs)
+        device = (
+            torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+        )
         with torch.no_grad():
             # with self.compute_loss_context_manager():
             #     loss, _ = self.compute_loss(model, inputs, return_outputs=True)
@@ -73,14 +74,17 @@ class CustomTrainer(Trainer):
 
             outputs = model.generate(**inputs, max_new_tokens=256)
 
+        loss = torch.FloatTensor([0.0]).to(device)
         if prediction_loss_only:
-            return torch.FloatTensor([0.0]), None, None
+            return loss, None, None
 
         outputs = nested_detach(outputs)
-        return torch.FloatTensor([0.0]), outputs, inputs["labels"]
+        return loss, outputs, inputs["labels"]
 
 
-def compute_metrics(eval_preds, val_df: pd.DataFrame, processor: Pix2StructProcessor, output_dir: str):
+def compute_metrics(
+    eval_preds, val_df: pd.DataFrame, processor: Pix2StructProcessor, output_dir: str
+):
     # assume chart_type is all correct
     chart_types = val_df["chart_type"].values
     ground_truth = []

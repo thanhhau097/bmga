@@ -98,8 +98,8 @@ def main():
         .reset_index(drop=True)
     )
 
-    print(train_df["chart_type"].value_counts())
-    print(val_df["chart_type"].value_counts())
+    logger.info(train_df["chart_type"].value_counts())
+    logger.info(val_df["chart_type"].value_counts())
 
     processor = create_processor(model_args.model_name)
     train_dataset = ImageCaptioningDataset(
@@ -148,7 +148,12 @@ def main():
         train_dataset=train_dataset,
         eval_dataset=mini_val_dataset,
         data_collator=partial(collate_fn, processor=processor),
-        compute_metrics=partial(compute_metrics, val_df=val_df, processor=processor, output_dir=training_args.output_dir),
+        compute_metrics=partial(
+            compute_metrics,
+            val_df=val_df,
+            processor=processor,
+            output_dir=training_args.output_dir,
+        ),
     )
 
     # Training
@@ -164,7 +169,7 @@ def main():
 
     # Evaluation
     if training_args.do_eval:
-        # trainer.eval_dataset = val_dataset
+        trainer.eval_dataset = val_dataset
         metrics = trainer.evaluate()
         trainer.log_metrics("eval", metrics)
         trainer.save_metrics("eval", metrics)
