@@ -59,7 +59,7 @@ class Model(nn.Module):
             in_channels=1,
             drop_path_rate=drop_path,
             img_size=size,
-            pretrained=True,
+            pretrained=pretrained,
         )
         with torch.no_grad():
             dummy_inputs = torch.randn(2, 1, size, size)
