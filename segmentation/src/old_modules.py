@@ -76,87 +76,32 @@ class TimmUniversalEncoder(nn.Module):
         )
         self.name = name
         kwargs.pop("img_size")
-
         self.model = timm.create_model(name, **kwargs)
 
-        # if name.startswith("convnext"):
-        #     # Load laion weight
-        #     ckpt = torch.load("convnext_base.clip_laion2b_augreg_ft_in12k_in1k_384.pth")
-        #     ckpt_new = {
-        #         # k.replace("visual.trunk.", "")
-        #         k.replace("stem.", "stem_").replace("stages.", "stages_"): v
-        #         for k, v in ckpt.items()
-        #     }  # Conflict between CLIP model and timm version
-        #     self.model.load_state_dict(ckpt_new, strict=False)
-        #     del ckpt_new, ckpt
-
-        # Change stem feature map from scale 1/4 -> 1/2 and 1/2 (5 output layers)
-        # old_conv = self.model.stem_0
-        # old_in, old_out = old_conv.in_channels, old_conv.out_channels
-        # self.model.stem_0 = nn.Conv2d(old_in, old_out, kernel_size=(2, 2), stride=(2, 2))
-
-        # self.model.added_stem_0 = nn.Conv2d(
-        #     old_out, old_out, kernel_size=(2, 2), stride=(2, 2)
-        # )
-
-        # adapted_weight = old_conv.weight.mean(dim=(2, 3), keepdim=True)
-        # adapted_weight = torch.cat([adapted_weight] * 2, dim=2)
-        # adapted_weight = torch.cat([adapted_weight] * 2, dim=3)
-
-        # self.model.stem_0.weight.data = adapted_weight
-        # self.model.stem_0.bias.data = old_conv.bias
-        # adapted_weight = adapted_weight.mean(dim=1, keepdim=True)
-        # self.model.added_stem_0.weight.data = torch.cat([adapted_weight] * old_out, dim=1)
-
-        # No downscale last stage feature map
-        # old_conv = self.model.stages[3].downsample[1]
-        # old_in, old_out = old_conv.in_channels, old_conv.out_channels
-        # self.model.stages[3].downsample[1] = nn.Conv2d(
-        #     old_in, old_out, kernel_size=1, stride=1
-        # )
-        # self.model.stages[3].downsample[1].weight.data = old_conv.weight.mean(
-        #     dim=(2, 3), keepdim=True
-        # )
-        # self.model.stages[3].downsample[1].bias.data = old_conv.bias
-
         if name.startswith("convnext"):
-            self._out_channels = [
-                in_channels,
-                self.model.feature_info.channels()[0],
-            ] + self.model.feature_info.channels()
-        else:
-            self._out_channels = [
-                in_channels,
-            ] + self.model.feature_info.channels()
+            old_conv = self.model.stages_3.downsample[1]
+            old_in, old_out = old_conv.in_channels, old_conv.out_channels
+            self.model.stages_3.downsample[1] = nn.Conv2d(
+                old_in, old_out, kernel_size=1, stride=1
+            )
+            self.model.stages_3.downsample[1].weight.data = old_conv.weight.mean(
+                dim=(2, 3), keepdim=True
+            )
+            self.model.stages_3.downsample[1].bias.data = old_conv.bias
+
+        self._out_channels = [
+            in_channels,
+        ] + self.model.feature_info.channels()
         self._depth = depth
         self._output_stride = output_stride
 
     def forward(self, x):
-        if self.name.startswith("convnext"):
-            features = []
-            features.append(x)
-
-            x = self.model.stem_0(x)
-            x = self.model.stem_1(x)
-
-            # Due with cascade feature map
-            features.append(F.interpolate(x, scale_factor=2, mode="bilinear"))
-
-            # x = self.model.added_stem_0(x)
-
-            x = self.model.stages_0(x)
-            features.append(x)
-            x = self.model.stages_1(x)
-            features.append(x)
-            x = self.model.stages_2(x)
-            features.append(x)
-            x = self.model.stages_3(x)
-            features.append(x)
-        else:
-            features = self.model(x)
-            features = [
-                x,
-            ] + features
+        features = self.model(x)
+        if self.name.startswith("beit"):
+            features = self.feat_pyramid(features)
+        features = [
+            x,
+        ] + features
         return features
 
     @property

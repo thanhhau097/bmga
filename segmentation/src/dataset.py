@@ -21,7 +21,7 @@ class SegmentationDataset(Dataset):
 
         self.data_dir = data_dir
         self.mode = mode
-        self.df = df[df['mode'] == mode].reset_index(drop=True)
+        self.df = df.reset_index(drop=True)
         self.image_paths, self.labels = self.preprocess_df()
         self.images = {}
         self.masks = {}
@@ -29,22 +29,27 @@ class SegmentationDataset(Dataset):
         if mode == "train":
             self.transform = A.Compose(
                 [
-                    # A.LongestMaxSize(max_size=int(size * 1.1), interpolation=1),
-                    # A.PadIfNeeded(
-                    #     min_height=int(size * 1.1),
-                    #     min_width=int(size * 1.1),
-                    #     border_mode=0,
-                    #     value=(0, 0, 0),
-                    # ),
-                    A.Resize(height=int(size * 1.1), width=int(size * 1.1), interpolation=1),
-                    A.RandomBrightnessContrast(p=0.1),
-                    A.HorizontalFlip(p=0.1),
-                    A.VerticalFlip(p=0.1),
-                    A.OneOf(
-                        [A.ShiftScaleRotate(), A.GridDistortion(), A.ElasticTransform()], p=0.1
+                    A.RandomScale(scale_limit=(-0.2, 0.2), p=1),
+                    A.Resize(
+                        height=size,
+                        width=size,
+                        interpolation=cv2.INTER_LINEAR,
                     ),
-                    A.OneOf([A.GaussNoise(), A.MultiplicativeNoise()], p=0.1),
-                    A.OneOf([A.Blur(blur_limit=3), A.MedianBlur(), A.MotionBlur()], p=0.1),
+                    A.RandomBrightnessContrast(p=0.3),
+                    A.HorizontalFlip(p=0.5),
+                    A.VerticalFlip(p=0.5),
+                    A.ShiftScaleRotate(
+                        shift_limit=0.0, scale_limit=0.1, rotate_limit=10, border_mode=0, p=0.5
+                    ),
+                    A.OneOf(
+                        [
+                            A.GridDistortion(num_steps=5, distort_limit=0.05, p=1.0),
+                            A.ElasticTransform(alpha=1, sigma=50, alpha_affine=50, p=1.0),
+                        ],
+                        p=0.3,
+                    ),
+                    # A.OneOf([A.GaussNoise(), A.MultiplicativeNoise()], p=0.5),
+                    # A.OneOf([A.Blur(blur_limit=3), A.MedianBlur(), A.MotionBlur()], p=0.5),
                     A.RandomCrop(width=int(size), height=int(size)),
                     ToTensorV2(),
                 ],
@@ -59,7 +64,7 @@ class SegmentationDataset(Dataset):
                     #     border_mode=0,
                     #     value=(0, 0, 0),
                     # ),
-                    A.Resize(height=size, width=size, interpolation=1),
+                    A.Resize(height=size, width=size, interpolation=cv2.INTER_LINEAR),
                     ToTensorV2(),
                 ],
             )

@@ -65,16 +65,18 @@ def main():
 
     # Load data
     print(f"Reading data at {data_args.train_csv}")
-    df = pd.read_csv(data_args.train_csv)
+    train_df = pd.read_csv(data_args.train_csv)
+    print(f"Reading data at {data_args.val_csv}")
+    val_df = pd.read_csv(data_args.val_csv)
 
     train_dataset = SegmentationDataset(
-        df=df,
+        df=train_df,
         data_dir=data_args.data_dir,
         size=data_args.size
     )
 
     val_dataset = SegmentationDataset(
-        df=df,
+        df=val_df,
         data_dir=data_args.data_dir,
         size=data_args.size,
         mode='val'

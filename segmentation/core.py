@@ -6,6 +6,7 @@ from albumentations.pytorch import ToTensorV2
 from tqdm import tqdm
 
 from .src.model import Model
+from .src.old_model import OldModel
 
 
 class InferenceDataset(torch.utils.data.Dataset):
@@ -32,8 +33,14 @@ def collate_fn(batch):
 
 
 class SegmentationModel:
-    def __init__(self, arch, encoder_name, drop_path, size, weights_path):
-        self.model = Model(arch, encoder_name, drop_path, size, pretrained=False)
+    def __init__(self, arch, encoder_name, drop_path, size, weights_path, version="new"):
+        self.version = version
+        if version == "new":
+            self.model = Model(arch, encoder_name, drop_path, size, pretrained=False)
+        elif version == "old":
+            self.model = OldModel(arch, encoder_name, drop_path, size, pretrained=False)
+        else:
+            raise ValueError(f"Unknown version: {version}")
         self.model.load_state_dict(torch.load(weights_path))
         self.model.eval()
 
@@ -58,8 +65,11 @@ class SegmentationModel:
                 batch = {k: v.cuda() for k, v in batch.items()}
             with torch.no_grad():
                 mask = self.model(batch["images"])
-                
-            masks.append(mask.cpu().numpy())
+            
+            if self.version == "old":
+                masks.append(mask.cpu().numpy())
+            else:
+                masks.append(mask[1].cpu().numpy())
 
         return np.concatenate(masks)
 

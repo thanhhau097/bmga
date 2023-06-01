@@ -12,8 +12,9 @@ from typing import Iterable, Dict
 import torch.nn.functional as F
 from torch import nn, Tensor
 import segmentation_models_pytorch as smp
+from torch.nn.functional import binary_cross_entropy_with_logits
 
-DiceLoss = smp.losses.DiceLoss(mode="multilabel")
+DiceLoss = smp.losses.DiceLoss(mode="binary")
 
 from monai.metrics.utils import get_mask_edges, get_surface_distance
 def compute_hausdorff_monai(pred, gt, max_dist):
@@ -71,9 +72,21 @@ class CustomTrainer(Trainer):
 
     def compute_loss(self, model: Model, inputs: Dict, return_outputs=False):
         device = "cuda" if torch.cuda.is_available() else "cpu"
+        loss = 0.0
+
+
         outputs = model(inputs["images"].to(device))
         labels = inputs.get("labels")
-        loss = seg_criterion(outputs, labels)
+
+
+        loss += seg_criterion(outputs[0], labels)
+        loss += seg_criterion(outputs[1], labels)
+
+    #     loss += binary_cross_entropy_with_logits(outputs[0], labels.unsqueeze(1))
+    #     loss += binary_cross_entropy_with_logits(outputs[1], labels.unsqueeze(1))
+
+
+        outputs = outputs[1]
         if return_outputs:
             return (loss, outputs)
         return loss

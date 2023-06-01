@@ -3,8 +3,3 @@ torchvision
 transformers
 pandas
 scikit-learn
-
-efficientnet-pytorch==0.7.1
-pretrainedmodels==0.7.4
-segmentation_models_pytorch==0.3.2
-timm==0.6.12
