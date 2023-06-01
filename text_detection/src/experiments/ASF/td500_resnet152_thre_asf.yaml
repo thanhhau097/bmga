@@ -10,7 +10,7 @@ define:
             class: Builder
             model: SegDetectorModel
             model_args:
-                backbone: deformable_resnet50
+                backbone: resnet152
                 decoder: SegSpatialScaleDetector
                 decoder_args: 
                     adaptive: True
@@ -40,7 +40,7 @@ define:
         model_saver: 
             class: ModelSaver
             dir_path: model
-            save_interval: 34
+            save_interval: 1000
             signal_path: save
         scheduler: 
             class: OptimizerScheduler
@@ -65,13 +65,13 @@ define:
                 collect_fn:
                     class: ICDARCollectFN
         visualize: false
-        interval: 4500
+        interval: 1000
         exempt: 1
 
     logger:
         class: Logger
         verbose: true
         level: info
-        log_interval: 34
+        log_interval: 100
 
     evaluation: *validate

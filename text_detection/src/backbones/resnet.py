@@ -338,3 +338,23 @@ def resnet152(pretrained=True, **kwargs):
         model.load_state_dict(model_zoo.load_url(
             model_urls['resnet152']), strict=False)
     return model
+
+def deformable_resnet152(pretrained=False, **kwargs):
+    """Constructs a ResNet-152 model with deformable conv.
+    Args:
+        pretrained (bool): If True, returns a model pre-trained on ImageNet
+    """
+    model = ResNet(Bottleneck, [3, 8, 36, 3],
+                   dcn=dict(modulated=True,
+                            deformable_groups=1,
+                            fallback_on_stride=False),
+                   stage_with_dcn=[False, True, True, True],
+                   **kwargs)
+    if pretrained:
+        try:
+            model.load_state_dict(model_zoo.load_url(
+                model_urls['resnet50']), strict=False)
+        except:
+            model.load_state_dict(model_zoo.load_url(
+                model_urls['resnet50'], map_location=lambda storage, loc: storage.cuda()), strict=False)
+    return model
